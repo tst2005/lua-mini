@@ -13,7 +13,7 @@ Some code comes from thirdparties :
 
 # License
 
-My code is under MIT License
+My code is under [MIT License][mycode-lic]
 
 
 [knife.base]: https://github.com/airstruck/knife/blob/master/knife/base.lua
@@ -21,3 +21,5 @@ My code is under MIT License
 
 [pl.compat]: https://github.com/tst2005/lua-penlight/blob/master/lua/pl/compat.lua#L51-L67
 [pl-lic]: https://github.com/tst2005/lua-penlight/blob/master/LICENSE.md
+
+[mycode-lic]: https://www.opensource.org/licenses/mit-license
