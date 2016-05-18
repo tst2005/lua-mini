@@ -1,8 +1,10 @@
 
+-- Copyright (c) 2016 TsT <tst2005@gmail.com>
+
 local common = {}
 common._VERSION  = "mini.class v0.1.0"
 common._URL      = 'http://github.com/tst2005/lua-mini'
-common._LICENSE  = 'MIT LICENSE <http://www.opensource.org/licenses/mit-license.php>'
+common._LICENSE  = 'MIT'
 
 
 -- <thirdparty>
