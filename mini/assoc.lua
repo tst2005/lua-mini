@@ -24,7 +24,6 @@ local function cache_get2(t_cache, obj1, obj2)
 	return nil
 end
 
-
 -- 1 2 3 4 5
 -- (((1&2)&3)&4)&5
 
@@ -43,9 +42,30 @@ local function cache_getN(t_cache, obj1, obj2, ...)
 	end
 	return cache_get2(t_cache, obj1, obj2)
 end
+
+local class = require "mini.class"
+local instance = assert(class.instance)
+
+local assoc_class = class("assoc", {
+	init = function(self)
+		self.cache = {}
+	end
+})
+
+function assoc_class:set(result, obj1, obj2, ...)
+	return cache_setN(self.cache, result, obj1, obj2, ...)
+end
+function assoc_class:get(obj1, obj2, ...)
+	return cache_getN(self.cache, obj1, obj2, ...)
+end
+
+
 local M = {}
 M.set2 = cache_set2
 M.get2 = cache_get2
-M.set  = cache_setN
-M.get  = cache_getN
+M.setN = cache_setN
+M.getN = cache_getN
+
+setmetatable(M, {__call=function(_self, ...) return instance(assoc_class, ...) end})
+
 return M
