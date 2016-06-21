@@ -1,5 +1,8 @@
+DEBUG_WEAK=({...})[1]
+
 local shadowself = require "mini.class.shadowself"
 
+--[[
 local i = {}
 function i:hello()
 	return("hello self="..tostring(self))
@@ -23,6 +26,42 @@ o.hello = 1
 assert(o.hello == 1)
 o.hello = nil
 assert(o.hello == nil)
+]]--
+
+do
+	local fakeinst = {}
+	function fakeinst:hello(a) return a, tostring(self) end
+
+	local str_fakeinst = tostring(fakeinst)
+	local o = shadowself(fakeinst)
+	assert( o.hello	== o.hello )
+	local a, b = o.hello("aa")
+	assert( a == "aa" )
+	assert( tostring(b) == str_fakeinst)
+
+	local str_hello = tostring(o.hello)
+
+print("backup the hello value into hello2")
+	fakeinst.hello2 = fakeinst.hello
+	fakeinst.hello = nil
+
+	collectgarbage();collectgarbage();
+print("CG;CG;")
+	print(o.hello2, str_hello)
+	assert( o.hello == nil )
+	fakeinst.hello = fakeinst.hello2
+	assert( tostring(o.hello), str_hello )
+
+	fakeinst.hello2 = nil
+	local h = fakeinst.hello
+	fakeinst.hello = nil
+
+	collectgarbage();collectgarbage();
+
+	assert( o.hello == nil)
+	fakeinst.hello = h
+	print( o.hello, str_hello)
+end
 
 --[[
 
