@@ -32,9 +32,9 @@ o1.hello()
 -- if you make a proxy and you make change (like destroy the original method) it will destroy the proxy
 -- if you restore the method function the previous proxy was not restored (already destroyed/lost)
 
-assert(DEBUG_WEAK)
-assert(DEBUG_WEAK=="k" or DEBUG_WEAK=="v" or DEBUG_WEAK=="kv" or DEBUG_WEAK=="")
-
+--assert(DEBUG_WEAK)
+--assert(DEBUG_WEAK=="k" or DEBUG_WEAK=="v" or DEBUG_WEAK=="kv" or DEBUG_WEAK=="")
+local DEBUG_WEAK = "kv"
 
 local function shadowself(inst)
 	assert(type(inst)=="table")
@@ -59,26 +59,26 @@ print("new proxy for "..tostring(original_method).." -> "..tostring(proxy))
 	return setmetatable({}, {
 		__index=function(_self, k)
 			assert(_self ~= inst)
-			if internal[k] == lost then
-				return nil
-			end
-			if internal[k] ~= nil then
-				return internal[k]
-			end
+--			if internal[k] == lost then
+--				return nil
+--			end
+--			if internal[k] ~= nil then
+--				return internal[k]
+--			end
 			local original_method = inst[k]
 			if type(original_method) == "function" then
 				return getproxy(original_method)
 			end
-print("return "..type(original_method))
+--print("return "..type(original_method), k)
 			return original_method
 		end,
-		__newindex = function(self, k, v)
-			if v == nil then
-				internal[k] = lost
-			else
-				internal[k] = v
-			end
-		end,
+--		__newindex = function(self, k, v)
+--			if v == nil then
+--				internal[k] = lost
+--			else
+--				internal[k] = v
+--			end
+--		end,
 	})
 end
 

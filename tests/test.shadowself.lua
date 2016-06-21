@@ -1,8 +1,10 @@
+
 DEBUG_WEAK=({...})[1]
 
 local shadowself = require "mini.class.shadowself"
+local dualenv    = require "mini.class.dualenv"
 
---[[
+
 local i = {}
 function i:hello()
 	return("hello self="..tostring(self))
@@ -11,13 +13,14 @@ i.t = {"t"}
 
 local r = i:hello()
 
-local o = shadowself(i)
+local o = dualenv(shadowself(i))
 
 assert( o.hello == o.hello, "instable method function value")
 assert( o.hello() == r)
 
 assert( i.t == o.t )
 assert( o.t == o.t )
+
 o.t = nil
 assert( i.t )
 assert( o.t == nil )
@@ -26,8 +29,8 @@ o.hello = 1
 assert(o.hello == 1)
 o.hello = nil
 assert(o.hello == nil)
-]]--
 
+print("-- part 2 --")
 do
 	local fakeinst = {}
 	function fakeinst:hello(a) return a, tostring(self) end
