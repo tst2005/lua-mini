@@ -11,6 +11,21 @@ Some code comes from thirdparties :
  * mini.class : [knife.base][knife.base] under [MIT License][knife-lic]
  * mini.compat-env : [pl.compat][pl.compat] under [MIT License][pl-lic]
 
+Components
+==========
+
+
+
+## shadow self
+
+Use to use an instance like a usual standalone function
+
+
+## dual env
+
+Convert a readonly table to as read/writ-able table.
+
+
 # License
 
 My code is under [MIT License][mycode-lic]

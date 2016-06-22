@@ -1,21 +1,13 @@
 
--- Important: we build the cache between original-function to proxy-function, and not between method-name to proxy-function
-
--- BUG :
--- * we catch instance method only if it's function (a callable table or userdata will not be catched)
-
--- to see: think about to expose the internal table, or the lost marker value.
 -- DUAL ENV: 
+--
+-- idea :
 -- if we need to share multiple dual env ... it should be interesting to have
 -- a separated table to manager marks,
 -- like status[key] = <value>
 -- * true => return original
 -- * false => dropped(return nil)
 -- * nil
-
--- behavior:
--- if you make a proxy and you make change (like destroy the original method) it will destroy the proxy
--- if you restore the method function the previous proxy was not restored (already destroyed/lost)
 
 local function dualenv(orig)
 	assert(type(orig)=="table")

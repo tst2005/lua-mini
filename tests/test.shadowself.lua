@@ -1,8 +1,8 @@
 
 DEBUG_WEAK=({...})[1]
 
-local shadowself = require "mini.class.shadowself"
-local dualenv    = require "mini.class.dualenv"
+local shadowself = require "mini.shadowself"
+local dualenv    = require "mini.dualenv"
 
 
 local i = {}

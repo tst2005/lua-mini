@@ -19,26 +19,13 @@ o1.hello()
 -- BUG :
 -- * we catch instance method only if it's function (a callable table or userdata will not be catched)
 
--- to see: think about to expose the internal table, or the lost marker value.
--- DUAL ENV: 
--- if we need to share multiple dual env ... it should be interesting to have
--- a separated table to manager marks,
--- like status[key] = <value>
--- * true => return original
--- * false => dropped(return nil)
--- * nil
-
 -- behavior:
 -- if you make a proxy and you make change (like destroy the original method) it will destroy the proxy
 -- if you restore the method function the previous proxy was not restored (already destroyed/lost)
 
---assert(DEBUG_WEAK)
---assert(DEBUG_WEAK=="k" or DEBUG_WEAK=="v" or DEBUG_WEAK=="kv" or DEBUG_WEAK=="")
-local DEBUG_WEAK = "kv"
-
 local function shadowself(inst)
 	assert(type(inst)=="table")
-	local cache = setmetatable({}, {__mode=DEBUG_WEAK}) -- fully weak table
+	local cache = setmetatable({}, {__mode="kv"}) -- fully weak table
 	local function getproxy(original_method)
 		local proxy = cache[original_method]
 		-- get from cache
@@ -51,7 +38,7 @@ local function shadowself(inst)
 			return original_method(inst, ...)
 		end
 		cache[original_method] = proxy
-print("new proxy for "..tostring(original_method).." -> "..tostring(proxy))
+--print("new proxy for "..tostring(original_method).." -> "..tostring(proxy))
 		return proxy
 	end
 	local lost = {} -- uniq value
@@ -59,12 +46,6 @@ print("new proxy for "..tostring(original_method).." -> "..tostring(proxy))
 	return setmetatable({}, {
 		__index=function(_self, k)
 			assert(_self ~= inst)
---			if internal[k] == lost then
---				return nil
---			end
---			if internal[k] ~= nil then
---				return internal[k]
---			end
 			local original_method = inst[k]
 			if type(original_method) == "function" then
 				return getproxy(original_method)
@@ -72,13 +53,9 @@ print("new proxy for "..tostring(original_method).." -> "..tostring(proxy))
 --print("return "..type(original_method), k)
 			return original_method
 		end,
---		__newindex = function(self, k, v)
---			if v == nil then
---				internal[k] = lost
---			else
---				internal[k] = v
---			end
---		end,
+		__newindex = function(_self)
+			error("read only table", 2)
+		end
 	})
 end
 
