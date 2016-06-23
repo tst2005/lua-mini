@@ -14,16 +14,71 @@ Some code comes from thirdparties :
 Components
 ==========
 
+## assertlevel.lua
+
+It's an `assert` function that accept the `error` function's third argument.
 
 
-## shadow self
+## assoc.lua
+
+A way to get an uniq value (as key) from two or more object.
+
+```lua
+local a, b, c = {}, {}, {}
+
+local t = {}
+local key = assoc(a, b, c)
+t[key] = "abc"
+```
+
+## class/*.lua
+
+## class.lua
+
+## compat-env.lua
+
+Provide a minimalist forward compatibility layer for the `load` function
+
+## ro2rw.lua
+
+Generate a read/writable table proxy indexed from a readonly table.
+
+## (memoize.lua)
+
+FILLME
+
+## (misc.lua)
+
+FILLME
+
+## pattern.lua
+
+FILLME
+
+## quote_magics.lua
+
+A function to convert plaintext to lua pattern to be matched using any `string.*` matching function (`find`, `match`, `gsub`, ...)
+
+
+
+## shadowself.lua
 
 Use to use an instance like a usual standalone function
 
+## tcopy.lua
 
-## dual env
+FILLME
 
-Convert a readonly table to as read/writ-able table.
+## toboolean.lua
+
+A simple function to convert :
+ * `"true"` string to `true` boolean value
+ * `"false"` string to `false` boolean value
+ * anything else to nil
+
+## weaktable.lua
+
+FILLME
 
 
 # License
@@ -38,3 +93,4 @@ My code is under [MIT License][mycode-lic]
 [pl-lic]: https://github.com/tst2005/lua-penlight/blob/master/LICENSE.md
 
 [mycode-lic]: https://www.opensource.org/licenses/mit-license
+
