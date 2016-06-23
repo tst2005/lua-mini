@@ -27,8 +27,8 @@ local function shadowself(inst)
 	assert(type(inst)=="table")
 	local cache = setmetatable({}, {__mode="kv"}) -- fully weak table
 	local function getproxy(original_method)
+		-- get it from cache
 		local proxy = cache[original_method]
-		-- get from cache
 		if proxy then
 			return proxy
 		end
@@ -37,26 +37,23 @@ local function shadowself(inst)
 		local proxy = function(...)
 			return original_method(inst, ...)
 		end
+		-- add it to cache
 		cache[original_method] = proxy
---print("new proxy for "..tostring(original_method).." -> "..tostring(proxy))
 		return proxy
 	end
-	local lost = {} -- uniq value
-	local internal = {} -- the internal table use to store value
 	return setmetatable({}, {
 		__index=function(_self, k)
-			assert(_self ~= inst)
+			assert(_self ~= inst, "do not expose the instance")
 			local original_method = inst[k]
 			if type(original_method) == "function" then
 				return getproxy(original_method)
 			end
---print("return "..type(original_method), k)
 			return original_method
 		end,
 		__newindex = function(_self)
 			error("read only table", 2)
 		end
-	})
+	}), cache
 end
 
 local M = {}
