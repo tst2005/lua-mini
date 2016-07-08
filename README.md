@@ -39,7 +39,7 @@ t[key] = "abc"
 
 Provide a minimalist forward compatibility layer for the `load` function
 
-## ro2rw.lua
+## proxy/ro2rw.lua
 
 Generate a read/writable table proxy indexed from a readonly table.
 
@@ -61,7 +61,7 @@ A function to convert plaintext to lua pattern to be matched using any `string.*
 
 
 
-## shadowself.lua
+## proxy/shadowself.lua
 
 Use to use an instance like a usual standalone function
 

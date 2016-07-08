@@ -1,4 +1,10 @@
 ----------------
+
+-- <thirdparty>
+-- pl.compat : https://github.com/stevedonovan/Penlight/blob/master/lua/pl/compat.lua
+-- Copyright (c) 2009 Steve Donovan, David Manura
+-- License : https://github.com/stevedonovan/Penlight/blob/master/LICENSE.md
+
 --- Lua 5.1/5.2 compatibility
 -- The exported function `load` is Lua 5.2 compatible.
 -- `compat.setfenv` and `compat.getfenv` are available for Lua 5.2, although
@@ -48,5 +54,6 @@ else
 		return chunk,err
 	end
 end
+-- </thirdparty>
 
 return compat

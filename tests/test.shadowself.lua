@@ -1,8 +1,8 @@
 
 DEBUG_WEAK=({...})[1]
 
-local shadowself = require "mini.shadowself"
-local ro2rw      = require "mini.ro2rw"
+local shadowself = require "mini.proxy.shadowself"
+local ro2rw      = require "mini.proxy.ro2rw"
 local function kcount(t)
 	local count=0
 	for _k in pairs(t) do

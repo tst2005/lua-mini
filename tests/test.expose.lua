@@ -1,4 +1,4 @@
-local expose = require "mini.expose"
+local expose = require "mini.proxy.expose"
 
 local o = {
 	"a",

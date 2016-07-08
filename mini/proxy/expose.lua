@@ -2,16 +2,31 @@
 -- TODO: voir si jarrive a faire une class ou lors de la creation de l'instance, l'init renvoie l'object "env" exposable + l'instance elle meme qui sert a manager l'object
 -- par exemple refaire un obj_env[key] = nil ; internal[key] = exposed
 
--- expose only selected
-local function expose(orig, exposed_keys)
+-- expose : expose some methods (by table/function)
+local function expose(orig, filter)
 	assert(type(orig)=="table")
+
 	local exposed = {} -- uniq value
 	local internal = {} -- the internal table use to store value
-	for k,v in pairs(exposed_keys or {}) do -- tcopy ?
-		if v == true then
-			internal[k] = exposed
+
+	if type(filter)=="table" then
+		for k,v in pairs(filter) do -- tcopy ?
+			if type(k) == "number" and type(v) == "string" then	-- filtre={"meth1", "meth2"}
+				internal[v] = exposed
+			elseif v == true then					-- filter={meth1=true, meth2=true}
+				internal[k] = exposed
+			end
 		end
+	elseif type(filter)=="function" then
+		for k in pairs(orig) do
+			if type(k) == "string" and filter(k) == true then
+				internal[k] = exposed
+			end
+		end
+	else
+		error("invalid filter", 2)
 	end
+
 	return setmetatable({}, {
 		__index=function(self, k)
 			assert(self ~= orig)
@@ -33,9 +48,10 @@ local function expose(orig, exposed_keys)
 	})
 end
 
+
 -- almost like expose_all_by_default
 local function ro2rw(readonly)
-	assert(type(orig)=="table")
+	assert(type(readonly)=="table")
 	local lost = {} -- uniq value
 	local internal = {} -- the internal table use to store value
 	return setmetatable({}, {

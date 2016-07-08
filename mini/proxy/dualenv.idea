@@ -1,0 +1,10 @@
+-- DUAL ENV:
+--
+-- idea :
+-- if we need to share multiple dual env ... it should be interesting to have
+-- a separated table to manager marks,
+-- like status[key] = <value>
+-- * true => return original
+-- * false => dropped(return nil)
+-- * nil
+
