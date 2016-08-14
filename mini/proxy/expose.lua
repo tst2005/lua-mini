@@ -3,7 +3,7 @@
 -- par exemple refaire un obj_env[key] = nil ; internal[key] = exposed
 
 -- expose : expose some methods (by table/function)
-local function expose(orig, filter)
+local function expose(orig, filter, indexhook)
 	assert(type(orig)=="table")
 
 	local exposed = {} -- uniq value
@@ -19,8 +19,14 @@ local function expose(orig, filter)
 		end
 	elseif type(filter)=="function" then
 		for k in pairs(orig) do
-			if type(k) == "string" and filter(k) == true then
-				internal[k] = exposed
+			if type(k) == "string" then
+				local k2 = filter(k)
+				print("k2=", k2, k)
+				if k2 == true then
+					internal[k] = exposed
+				elseif type(k2) == "string" then
+					internal[k2] = exposed
+				end
 			end
 		end
 	else
@@ -32,7 +38,7 @@ local function expose(orig, filter)
 			assert(self ~= orig)
 			local v = internal[k]
 			if v == exposed then
-				return orig[k]
+				return indexhook and indexhook(orig, k) or orig[k]
 			end
 			return v
 		end,
