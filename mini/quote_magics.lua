@@ -3,10 +3,4 @@ local function quote_magics(str)
 	return first
 end
 
-do -- self test
-	for _i, k in ipairs{ "^", "$", "(", ")", "%", ".", "[", "]", "*", "+", "-", "?" } do
-		assert( quote_magics(k) == "%"..k)
-	end
-end
-
 return quote_magics
