@@ -41,6 +41,8 @@ build = {
 	["mini.lookupify"]		= 	"mini/lookupify.lua",
 
 	["mini.math.round"]		= 	"mini/math/round.lua",
+	["mini.soft.math.type"]		=	"mini/soft/math/type.lua",
+	["mini.math.type"]		=	"mini/math/type.lua",
 
 	["mini.memoize"]		= 	"mini/memoize.lua",
 
