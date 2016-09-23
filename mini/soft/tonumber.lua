@@ -13,7 +13,7 @@
 10.2, nil
 ]]--
 
-local orig_tonumber = _G.tonumber
+local orig_tonumber = tonumber
 local tonumber_lua51
 local tonumber_lua52more
 local tonumber_lua52more2
