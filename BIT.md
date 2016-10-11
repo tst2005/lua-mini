@@ -10,7 +10,7 @@
 |											|
 |	|bit32	|bor		|-	|-	|y		|	|minimal	|
 |bit	|	|bor		|y	|y	|y		|	|minimal	|
-|	|	|`\|`		|	|	|		|`\|`	|minimal	|
+|	|	|`|`		|	|	|		|`|`	|minimal	|
 |											|
 |	|bit32	|bxor		|-	|-	|y		|	|minimal	|
 |bit	|	|bxor		|y	|y	|y		|	|minimal	|
