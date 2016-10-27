@@ -1,3 +1,8 @@
+
+-- make a proxy object to
+--  * enforce some content values
+--  * deny write of this enforced values
+
 --[[
 
 read:
@@ -20,7 +25,7 @@ bypass write: assert(over[k]~=nil); over[k]=nil
 ]]--
 
 -- solution 1 : use function for __index and __newindex
-local function proxyoverlay(orig)
+local function proxy_overlay(orig)
 	local over = {}
 	return setmetatable({}, {
 		__index = function(_self, k)
@@ -40,53 +45,4 @@ local function proxyoverlay(orig)
 	}), over
 end
 
-local function movecontent(src, dst)
-	assert(type(dst)=="table")
-	for k,v in next, src, nil do -- copy all from src to dst
-		dst[k]=v
-	end
-	for k,v in next, dst, nil do -- remove all from dst
-		src[k]=nil
-	end
-	return dst
-end
-
--- solution 2 : use special table for __index and __newindex
-local function mutantoverlay(orig) -- make a mutation of the original object
-	local mt = getmetatable(orig)
-	assert(mt==nil or (mt.__index==nil and mt.__newindex==nil))
-
-	local copy = movecontent(orig, {})
-
-	local proxy, over = mountoverlay(copy)
-	if not mt then
-		mt={}
-		setmetatable(orig, mt)
-	end
-	mt = mt or {}
-	mt.__index = proxy
-	mt.__newindex = proxy
-
-	local function unproxy()
-		local mt = assert(getmetatable(orig))
-		mt.__index = nil
-		mt.__newindex = nil
-		movecontent(copy, orig)
-		if next(mt) == nil then -- mt is an empty table
-			mt=nil
-			setmetatable(orig, nil)
-		end
-	end
-
-	return orig, over, unproxy, copy
-end
-
-local function overlay(orig, inplace)
-	if inplace then
-		return mutantoverlay(orig)
-	else
-		return proxyoverlay(orig)
-	end
-end
-
-return overlay
+return proxy_overlay

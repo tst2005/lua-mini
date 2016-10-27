@@ -1,4 +1,4 @@
-local overlay = require "mini.proxy.overlay"
+local overlay = require "mini.mutant.overlay"
 
 local d = {}
 d["."]=d
@@ -6,7 +6,7 @@ d[".."]={}
 d["cc"]="ORIG"
 
 do ------------------------------------------------------
-local _d,mount,unproxy,copy = overlay(d, true)
+local _d,mount,unproxy,copy = overlay(d)
 local newd = d
 local d = copy
 
