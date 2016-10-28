@@ -2,29 +2,29 @@ local class = require "mini.class"
 local instance = assert(class.instance)
 
 local proxyctl = class("proxyctl")
-function proxyctl:init(orig, handler_on, handler_off)
-	self._active	= false
+function proxyctl:init(orig, handler_to_start, handler_to_stop)
+	self._enabled	= false
 	self._orig	= assert(orig)
-	self._on	= assert(handler_on)
-	self._off	= assert(handler_off)
+	self._start	= assert(handler_to_start)
+	self._stop	= assert(handler_to_stop)
 end
 
 function proxyctl:start(...)
-	if self._on then
-		self._active = true
-		return self._on(self, ...)
+	if self._start then
+		self._enabled = true
+		return self._start(self, ...)
 	end
 end
 
 function proxyctl:stop(...)
-	if self._off then
-		self._active = false
-		return self._off(self, ...)
+	if self._stop then
+		self._enabled = false
+		return self._stop(self, ...)
 	end
 end
 
 function proxyctl:status()
-	return self._active
+	return self._enabled
 end
 
 return proxyctl
