@@ -2,6 +2,7 @@
 local M = {}
 
 local function autometa(inst, methodes)
+	assert( type(methodes)=="table", "methodes must be a table")
 	local mt = getmetatable(inst)
 	assert(type(mt)=="table")
 	local errs = {}
