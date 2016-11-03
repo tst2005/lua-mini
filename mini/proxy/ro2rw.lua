@@ -6,13 +6,13 @@ local function ro2rw(orig)
 	return setmetatable({}, {
 		__index=function(_self, k)
 			assert(_self ~= orig)
+			if internal[k] == nil then
+				return orig[k]
+			end
 			if internal[k] == lost then
 				return nil
 			end
-			if internal[k] ~= nil then
-				return internal[k]
-			end
-			return orig[k]
+			return internal[k]
 		end,
 		__newindex = function(self, k, v)
 			if v == nil then
