@@ -14,32 +14,10 @@ local class = require "mini.class"
 local instance = assert(class.instance)
 
 local parazit = class("parazit")
-function parazit:init()
+
+function parazit:init(victim)
+	-- TODO: self:attach(victim)
 	return 
-end
-
--- returns:
--- #1: the original object
--- #2: (specific) the internal proxy.overlay registry
-local function mutant_on(self)
-	local mt = getmetatable(orig)
-	assert(mt==nil or (mt.__index==nil and mt.__newindex==nil))
-
-	local orig = self._orig
-
-	local copy = movecontent(orig, {})
-	self._copy = copy
-
-	local proxy, over = proxy_overlay(copy)
-	if not mt then
-		mt={}
-		setmetatable(orig, mt)
-	end
-	mt = mt or {}
-	mt.__index    = proxy
-	mt.__newindex = proxy
-
-	return over
 end
 
 -- victim
@@ -54,7 +32,7 @@ function parazit:attach(victim)
 		error("victim already exists", 2)
 	end
 
-	local oldmt = getmetatable(victim)	-- backup original metatable
+	local origmt = getmetatable(victim)	-- backup original metatable
 	local newmt = {}			-- the new empty metatable
 	local ok,v = pcall(setmetatable, victim, newmt)
 	if not ok then
@@ -63,11 +41,13 @@ function parazit:attach(victim)
 	assert(getmetatable(v)==newmt, "internal error, attach failure")
 	-- at this step the victim metatable is a empty table => easy to dump (without interception)
 
-	local new = victim
 	self.orig = movecontent(victim, {})
+
+	local new = victim
+
 	self.victim = victim
 	self.new = new
-	self.origmt = oldmt
+	self.origmt = origmt
 	self.newmt = newmt
 
 	-- set the handlers
@@ -80,37 +60,48 @@ function parazit:attach(victim)
 	-- TODO: newmt.__metatable = true ?
 	-- TODO: __pairs
 	-- TODO: __ipairs
+	assert(self.victim)
 	return new
 end
 
 function parazit:detach()
-	if self.victim then
-		if not pcall(setmetatable, victim, self.metavictim) then
-			return false
-		end
-		self.metavictim = nil
-		self.victim = nil
+	assert(self.victim)
+
+	local victim = self.victim
+	local newmt = self.newmt
+	newmt.__metatable	= nil
+
+	assert(getmetatable(victim)==newmt)
+
+	newmt.__index		= nil
+	newmt.__newindex	= nil
+	newmt.__pairs		= nil
+	newmt.__ipairs		= nil
+
+	if next(newmt) == nil then -- newmt is an empty table
+		newmt=nil
+		setmetatable(victim, nil)
 	end
-	return true
-end
---[[
-local function mutant_off(self)
-	local orig = self.orig
-	local mt = assert(getmetatable(orig))
-	mt.__index = nil
-	mt.__newindex = nil
-	movecontent(copy, orig)
-	if next(mt) == nil then -- mt is an empty table
-		mt=nil
-		setmetatable(orig, nil)
+	assert(getmetatable(victim)==nil)
+
+	movecontent(self.orig, victim)
+
+	if not pcall(setmetatable, victim, self.origmt) then
+		error("fail to restore backuped metatable", 2)
+		return false, "fail to restore backuped metatable"
 	end
-	--return nil
+	self.new	= nil
+	self.victim	= nil
+	self.orig	= nil
+	self.origmt	= nil
+	self.newmt	= nil
+
+	return victim
 end
-]]--
 
 -- read op: (offset=1)
---	nko 1 = offset + 0
---	nok 2 = offset + 1
+--	rko 1 = offset + 0
+--	rok 2 = offset + 1
 -- write op: (offset=3)
 --	nop 3 = offset + 0 + 0
 --	add 4 = offset + 0 + 1
@@ -128,13 +119,16 @@ function parazit:writer(k, v) -- like __newindex
 end
 
 function parazit:hook(mask, k, v)
-	local dispatch = {"nko", "nok", "nop","add","del","mod"}
+	local dispatch = {"rko", "rok", "nop","add","del","mod"}
 	--		   1      2      3     4     5     6
-	local even = dispatch[mask]
-	print(even, k, v)
-	if self[even] then
-		print("handler exists")
+	local event = dispatch[mask]
+
+--print("#### hook ", event, self[event], mask, k, v)
+	if not self[event] then
+		print("NO SUCK self["..event.."]","self", self)
+		return
 	end
+	return assert(self[event])(self, k, v)
 end
 
 return parazit
