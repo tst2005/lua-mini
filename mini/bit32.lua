@@ -6,11 +6,10 @@
 local function requireany(names)
 	for _i, name in ipairs(names) do
 		local ok, mod = pcall(require, name)
-		print(name, ok)
 		if ok and type(mod)=="table" then
 			return mod
 		end
 	end
 	return nil
 end
-return requireany {"bitop", "bit", "bit32", "mini.soft.bit.bit-lua53"}
+return requireany {"bitop", "bit", "bit32", "mini.soft.bit"}
