@@ -1,7 +1,7 @@
 
 local bit
 if _VERSION == "Lua 5.3" then
-	bit = require "mini.soft.bit.base-lua53only"
+	bit = require "mini.soft.bit.bit-lua53"
 	-- require"mini.table.shallowcopy"(bit, require"mini.soft.bit.base-lua53only")
 else
 	bit = {}
