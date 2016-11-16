@@ -1,16 +1,13 @@
 
-local lfs = require "lfs"
-do
-        local lfs = require"lfs"
-        assert(lfs.symlinkattributes, "missing lfs.symlinkattributes")
-end
+local lfs = require"lfs"
+assert(lfs.symlinkattributes, "missing lfs.symlinkattributes")
+local posix = require "posix"
+assert(posix.chmod)
 
 local io = require "io"
 
 local modhelper = require "mini.modhelper"
 
-local M = {}
-local modhelper = require "mini.modhelper"
 local assertlevel = require "mini.assertlevel"
 local class =  require"mini.class"
 local instance = class.instance
@@ -25,31 +22,30 @@ function fs_lfs_class:init()
 		follow = false,
 	}
 	require "mini.class.autometa"(self, fs_lfs_class)
-	local s = self:workaround()
-	return s
+	local proxy = assert(shadowself(self, nil, "_"))
+	self._shadowself = proxy
+	return proxy
+end
+function fs_lfs_class:_workaround() -- or other way to intercept the instance object and returns the shadowed proxy
+	return assert(self._shadowself)
 end
 
+-- ls
 function fs_lfs_class:list(path)
 	return lfs.dir( assert(path, "invalid path") )
 end
 
-function fs_lfs_class:workaround() -- or other way to intercept the instance object and returns the shadowed proxy
-	self._shadowself = assert(shadowself(self))
-	return assert(self._shadowself)
-end
-
 local attrs_fs_to_lfs = {
-	dev = "dev",
 	ino = "ino",
 --	nlink
---	uid
---	gid
+	uid = "uid",
+	gid = "gid",
+	dev = "dev",
 --	rdev
 	atime = "access",
 	mtime = "modification",
 	ctime = "change",
---	size
---	permissions
+	size  = "size",
 	perm = "permissions",		mod = "permissions",
 --	blocks
 --	blksize
@@ -67,28 +63,14 @@ function fs_lfs_class:attr(p, name)
 	local lfs_attr = self._options.follow and lfs.attributes or lfs.symlinkattributes
 	return lfs_attr(p, attrs_fs_to_lfs[name] or name)
 end
+
+-- shell: test -e
 function fs_lfs_class:exists(path)
 	-- force no follow
 	return not not (lfs.symlinkattributes(
 		assert(path, "invalid path"), "mode"
 	))
 end
-
-
-function fs_lfs_class:isdir(p)
-	return self:attr(p, "type")=="directory"
-end
-function fs_lfs_class:islink(p)
-	return lfs.symlinkattributes(p, attrs_fs_to_lfs[name] or name)
-end
-
-function fs_lfs_class:atime() -- accesstime
-end
-function fs_lfs_class:ctime() -- changetime // creat[ed] time ?
-end
-function fs_lfs_class:mtime() -- modificationtime
-end
-
 
 function fs_lfs_class:opt(name)
 	return self._options[name]
@@ -101,21 +83,101 @@ function fs_lfs_class:nofollow()
 	self._options.follow = false
 end
 
---[[
-function fs_lfs_class:setopt(name, value)
-	assert(value ~= nil, "invalid option value")
-	assert(self._options[name]==nil, "invalid option")
-	self._options[name]=value
-end
-]]--
 
+-- shell: test -d
+function fs_lfs_class:isdir(p)
+	return self:attr(p, "type")=="directory"
+end
+-- shell: test -h
+function fs_lfs_class:islink(p)
+	return lfs.symlinkattributes(p, attrs_fs_to_lfs[name] or name)
+end
+
+-- accesstime
+function fs_lfs_class:atime(path)	return self:attr(path, "atime") end
+-- changetime (or created time ?)
+function fs_lfs_class:ctime()		return self:attr(path, "ctime") end
+-- modificationtime
+function fs_lfs_class:mtime()		return self:attr(path, "mtime") end
+
+function fs_lfs_class:size(path, as_apparentsize)
+	assert(as_apparentsize, "not implemented yet")
+	return self:attr(path, "size")
+end
+
+-- fs.permissions (file) 	Get the permission string of a file
+
+function fs_lfs_class:uid() return self:attr(p, "uid") end
+function fs_lfs_class:gid() return self:attr(p, "gid") end
+function fs_lfs_class:dev() return self:attr(p, "dev") end
+
+-- shell: touch
+function fs_lfs_class:create(path) -- FIXME: or touch ?
+	return lfs.touch(path)
+end
+
+-- fs.update (file, accesstime, modificationtime) 	Update the access/modification time of a file.
+function fs_lfs_class:update(path, atime, mtime)
+	return lfs.touch(path, atime, mtime)
+end
+function fs_lfs_class:currentdir()
+	return lfs.currentdir()
+end
+
+function fs_lfs_class:rename(oldname, newname) -- 
+end
+
+function fs_lfs_class:mkdir(path) -- 
+	return lfs.mkdir(path)
+end
+function fs_lfs_class:rmdir(dir, recursive) -- 
+	assert(recursive, "not implemented yet")
+	return lfs.rmdir(path)
+end
+-- fs.remove (file) 	Remove a file.
+
+-- Get the type of the file.
 function fs_lfs_class:type(path)
 	return self:attr(path, "type")
+end
+
+
+-- fs.unlink
+
+-- Create a link
+-- Create a hardlink to a file
+-- Create a symlink to a file or directory.
+function fs_lfs_class:link(file, link, as_symlink)
+
+end
+
+function fs_lfs_class:chmod(file, mode)
+	return posix.chmod(file, mode)
+end
+--[[
+function fs_lfs_class:chown(file, uid, gid)
+	return posix.chmod(file, uid, gid
+end
+]]--
+-- fs.chgrp
+
+function fs_lfs_class:umask(umask)
+	assert(umask==nil or type(umask)=="string", "invalid umask")
+	return posix.umask(umask)
+end
+
+------------------ PATH -------------------------
+
+-- Get the directory separator that the system uses.
+function fs_lfs_class:separator()
+	return '/' -- FIXME
 end
 
 function fs_lfs_class:open(path, mode, ...)
 	return io.open(path, mode, ...)
 end
+
+
 
 local function new()
 	return instance(fs_lfs_class)
