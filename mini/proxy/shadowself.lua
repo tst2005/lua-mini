@@ -23,8 +23,10 @@ o1.hello()
 -- if you make a proxy and you make change (like destroy the original method) it will destroy the proxy
 -- if you restore the method function the previous proxy was not restored (already destroyed/lost)
 
-local function shadowself(inst)
+local function shadowself(inst, instmt, denyprefix)
 	assert(type(inst)=="table")
+	if instmt==nil then instmt = getmetatable(inst) end
+
 	local cache = setmetatable({}, {__mode="kv"}) -- fully weak table
 	local function getproxy(original_method)
 		-- get it from cache
@@ -42,8 +44,11 @@ local function shadowself(inst)
 		return proxy
 	end
 	return setmetatable({}, {
-		__index=function(_self, k)
+		__index = function(_self, k)
 			assert(_self ~= inst, "do not expose the instance")
+			if denyprefix == k:sub(1,#denyprefix) then
+				return nil -- deny access
+			end
 			local original_method = inst[k]
 			if type(original_method) == "function" then
 				return getproxy(original_method)
@@ -52,7 +57,18 @@ local function shadowself(inst)
 		end,
 		__newindex = function(_self)
 			error("read only table", 2)
-		end
+		end,
+		__call = function(_self, ...)
+			assert(_self ~= inst, "do not expose the instance")
+			if denyprefix == k:sub(1,#denyprefix) then
+				return nil -- deny access
+			end
+			local original_method = getmetatable(inst).__call
+			if type(original_method) == "function" then
+				return getproxy(original_method)(...)
+			end
+			return original_method(...)
+		end,
 	}), cache
 end
 
