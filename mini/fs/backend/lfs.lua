@@ -30,9 +30,29 @@ function fs_lfs_class:_workaround() -- or other way to intercept the instance ob
 	return assert(self._shadowself)
 end
 
+function fs_lfs_class:_castpath(path)
+	if type(path) == "string" then
+		return path
+	end
+	return tostring(path)
+end
+
 -- ls
+function fs_lfs_class:listall(path)
+	return lfs.dir( assert( self:_castpath(path), "invalid path") )
+end
+
 function fs_lfs_class:list(path)
-	return lfs.dir( assert(path, "invalid path") )
+	local f2, v2 = lfs.dir( assert( self:_castpath(path), "invalid path") )
+	local f = function() return f2(v2) end
+	return function()
+		while true do -- FIXME: without loop!
+			local v = f()
+			if v ~= "." and v ~= ".." then
+				return v
+			end
+		end
+	end
 end
 
 local attrs_fs_to_lfs = {
@@ -59,16 +79,16 @@ local attrs_fs_to_lfs = {
 --	p = "named pipe",
 --}
 
-function fs_lfs_class:attr(p, name)
+function fs_lfs_class:attr(path, name)
 	local lfs_attr = self._options.follow and lfs.attributes or lfs.symlinkattributes
-	return lfs_attr(p, attrs_fs_to_lfs[name] or name)
+	return lfs_attr( self:_castpath(path), attrs_fs_to_lfs[name] or name)
 end
 
 -- shell: test -e
 function fs_lfs_class:exists(path)
 	-- force no follow
 	return not not (lfs.symlinkattributes(
-		assert(path, "invalid path"), "mode"
+		assert( self:_castpath(path), "invalid path"), "mode"
 	))
 end
 
@@ -85,24 +105,24 @@ end
 
 
 -- shell: test -d
-function fs_lfs_class:isdir(p)
-	return self:attr(p, "type")=="directory"
+function fs_lfs_class:isdir(path)
+	return self:attr( self:_castpath(path), "type")=="directory"
 end
 -- shell: test -h
-function fs_lfs_class:islink(p)
-	return lfs.symlinkattributes(p, attrs_fs_to_lfs[name] or name)
+function fs_lfs_class:islink(path)
+	return lfs.symlinkattributes( self:_castpath(path), attrs_fs_to_lfs[name] or name)
 end
 
 -- accesstime
 function fs_lfs_class:atime(path)	return self:attr(path, "atime") end
 -- changetime (or created time ?)
-function fs_lfs_class:ctime()		return self:attr(path, "ctime") end
+function fs_lfs_class:ctime(path)	return self:attr(path, "ctime") end
 -- modificationtime
-function fs_lfs_class:mtime()		return self:attr(path, "mtime") end
+function fs_lfs_class:mtime(path)	return self:attr(path, "mtime") end
 
 function fs_lfs_class:size(path, as_apparentsize)
 	assert(as_apparentsize, "not implemented yet")
-	return self:attr(path, "size")
+	return self:attr( self:_castpath(path), "size")
 end
 
 -- fs.permissions (file) 	Get the permission string of a file
@@ -174,7 +194,7 @@ function fs_lfs_class:separator()
 end
 
 function fs_lfs_class:open(path, mode, ...)
-	return io.open(path, mode, ...)
+	return io.open( self:_castpath(path), mode, ...)
 end
 
 

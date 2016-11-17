@@ -50,10 +50,10 @@ local a, r = "/a/b/s", "r/e/l"
 local pa = P(a)
 local pr = P(r)
 --[[
-assert( tostring( pa:join(pr)) == a.."/"..r)
-assert( tostring( pr:join(pr)) == r.."/"..r)
-assert( tostring( pa:join(pa)) == a)
-assert( tostring( pr:join(pa)) == a)
+assert( tostring( pa:cd(pr)) == a.."/"..r)
+assert( tostring( pr:cd(pr)) == r.."/"..r)
+assert( tostring( pa:cd(pa)) == a)
+assert( tostring( pr:cd(pa)) == a)
 ]]--
 
 assert( tostring( P(r):toabs(P("/1/2/3")) ) == "/1/2/3".."/"..r)

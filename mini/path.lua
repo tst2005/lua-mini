@@ -1,4 +1,6 @@
 
+-- TOSEE: https://bitbucket.org/doub/path
+
 local string_split = require "mini.string.split"
 local shallowcopy = require "mini.table.shallowcopy"
 local asserttype = require "mini.asserttype"
@@ -111,8 +113,11 @@ end
 -- *    + abs2 = abs2
 -- rel1 + rel2 = rel1/rel2
 -- abs1 + rel2 = abs1/rel2
---[[
-function class_path:join(suffixpath, inplace)
+function class_path:cd(suffixpath, inplace)
+	if type(suffixpath)=="string" then
+		suffixpath = instance(class_path, suffixpath, self.sep)
+	end
+	assert(type(suffixpath)=="table" and suffixpath.isabs, "suffixpath must be a path object")
 	if suffixpath:isabs() then
 		return suffixpath:clone()
 	end
@@ -126,7 +131,6 @@ function class_path:join(suffixpath, inplace)
 	end
 	return new
 end
-]]--
 
 -- /   + b/c => /a/b
 -- /a  + b/c => /a/b/c
