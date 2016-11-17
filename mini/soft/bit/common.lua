@@ -1,29 +1,42 @@
 
 local M = {}
+
+-- <thirdparty bit.numberlua>
 local lshift, rshift, band -- forward declare
 
+local function CHECK(x)
+	if not( x >= 0x0 and x<= 4294967295 ) then
+		return band(x, 0xffffffff)
+	end
+	return x
+end
 
-function M.rrotate(x, disp)  -- Lua5.2 inspired
+local
+function rrotate(x, disp)  -- Lua5.2 inspired
 	disp = disp % 32
 	local low = band(x, 2^disp-1)
-	return rshift(x, disp) + lshift(low, 32-disp)
+	return CHECK( rshift(x, disp) + lshift(low, 32-disp) )
 end
-local rrotate = M.rrotate
+M.rrotate = rrotate
 
-function M.lrotate(x, disp)  -- Lua5.2 inspired
-  return rrotate(x, -disp)
+local
+function lrotate(x, disp)  -- Lua5.2 inspired
+	return CHECK( rrotate(x, -disp) )
 end
-local lrotate = M.lrotate
+M.lrotate = lrotate
 
 M.rol = M.lrotate  -- LuaOp inspired
 M.ror = M.rrotate  -- LuaOp insipred
 
-function M.arshift(x, disp) -- Lua5.2 inspired
-  local z = rshift(x, disp)
-  if x >= 0x80000000 then z = z + lshift(2^disp-1, 32-disp) end
-  return z
+local
+function arshift(x, disp) -- Lua5.2 inspired
+	local z = rshift(x, disp)
+	if x >= 0x80000000 then z = z + lshift(2^disp-1, 32-disp) end
+	return CHECK(z)
 end
-local arshift = M.arshift
+M.arshift = arshift
+
+-- </thirdparty>
 
 local proxyM = setmetatable({}, {
 	__index = M,

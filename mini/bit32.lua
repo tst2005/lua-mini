@@ -12,4 +12,4 @@ local function requireany(names)
 	end
 	return nil
 end
-return requireany {"bitop", "bit", "bit32", "mini.soft.bit"}
+return requireany {"bitop", "bit", "bit32", "mini.soft.bit.bit-lua53"}

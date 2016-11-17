@@ -114,6 +114,14 @@ checkeq(bit.bit32.bxor(1,2,4,8,16,2^30,2^31), 0xc000001f)
 checkeq(bit.bit32.bxor(-1,-1,-1,-1,-1), 2^32-1)
 checkeq(bit.bit32.band(255,255*2,255*4,255*8,255*16), 255-15)
 
+
+local vb = {
+  0, 1, -1, 2, -2, 0x12345678, 0x87654321,
+  0x33333333, 0x77777777, 0x55aa55aa, 0xaa55aa55,
+  0x7fffffff, 0x80000000, 0xffffffff
+}
+
+
 -- BIT.bit
 -- Optionally run bittest.lua (included) from LuaBitOp test suite.
 -- http://bitop.luajit.org/
@@ -123,6 +131,5 @@ checkeq(bit.bit32.band(255,255*2,255*4,255*8,255*16), 255-15)
 --end
 
 -- BIT.bit.
-
 
 print 'DONE'
