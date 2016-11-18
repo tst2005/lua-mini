@@ -38,11 +38,14 @@ function fs_lfs_class:_castpath(path)
 end
 
 -- ls
+--[[
 function fs_lfs_class:listall(path)
 	return lfs.dir( assert( self:_castpath(path), "invalid path") )
 end
+]]--
 
-function fs_lfs_class:list(path)
+--[[
+function fs_lfs_class:_list(path)
 	local f2, v2 = lfs.dir( assert( self:_castpath(path), "invalid path") )
 	local f = function() return f2(v2) end
 	return function()
@@ -53,6 +56,10 @@ function fs_lfs_class:list(path)
 			end
 		end
 	end
+end
+]]--
+function fs_lfs_class:_list(path)
+	return lfs.dir( assert( self:_castpath(path), "invalid path") )
 end
 
 local attrs_fs_to_lfs = {

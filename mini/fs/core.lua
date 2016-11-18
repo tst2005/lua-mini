@@ -56,6 +56,27 @@ function fs_class:find(path, config)
 	_find(".", config)
 end
 
+-- flag :	"*a" = with '.'*				true
+--		"*A" = with '.'* without '.'&'..'		false
+--		""   = without '.'*				nil
+function fs_class:list(path, flag)
+	assert( self:_castpath(path), "invalid path")
+	local f, a, b = self:_list(path)
+        local f2 = function() return f(a,b) end
+        return function()
+		local v
+                repeat
+			v = f2()
+                until not (v == "." or v == "..")
+		return v
+        end
+end
+
+function fs_class:_list(path)
+	error("backend must overwrite the default _list method", 2)
+	return nil
+end
+
 local function new()
 	return instance(fs_class)
 end
