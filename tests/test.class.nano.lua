@@ -1,4 +1,5 @@
-local class = require "mini.class.nano".newclass
+local class = require "mini.class.nano"
+local instance = assert(class.instance)
 
 local foo = class("foo", nil, nil)
 function foo:hello() return "hello" end
@@ -12,11 +13,10 @@ assert(foo.world==nil)
 assert(bar.hello and bar:hello()=="hayllo world")
 
 
-assert(foo.newinstance)
-local foo1 = assert( foo:newinstance() )
+local foo1 = assert( foo() )
 assert(foo1:hello()=="hello")
 
-local bar1 = assert( bar:newinstance() )
+local bar1 = assert( bar() )
 assert(bar1:hello()=="hayllo world")
 
 --assert(foo._name == "foo" and bar._name == "bar")
@@ -26,7 +26,7 @@ assert(bar1:hello()=="hayllo world")
 ------------------------------------------------------------------
 
 local echo_class = class("echo", nil, nil)
-function echo_class:__newinstance(what)
+function echo_class:init(what)
 	self.what = assert(what)
 	return self
 end
@@ -34,8 +34,8 @@ function echo_class:hello()
 	return self.what
 end
 
-local echo1 = assert( echo_class:newinstance("la la la la") )
-local echo2 = assert( echo_class:newinstance("pom pom pom") )
+local echo1 = assert( echo_class("la la la la") )
+local echo2 = assert( echo_class("pom pom pom") )
 assert(echo1:hello()=="la la la la")
 assert(echo2:hello()=="pom pom pom")
 
