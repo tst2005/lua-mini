@@ -1,4 +1,4 @@
-local ro2rwss = require "ro2rw-shadowself"
+local ro2rwss = require "mini.proxy.ro2rw-shadowself"
 local inst = {
 	print = print,
 	foo = function() return 123 end,
@@ -12,10 +12,10 @@ function inst:tostring(x) return tostring(x) end
 local x = ro2rwss(inst)
 
 
-print("inst", inst)
-print("x", x)
+--print("inst", inst)
+--print("x", x)
 
-print(print, x.print, x.print)
+--print(print, x.print, x.print)
 
 assert( x.notexists == nil )
 assert( type(x.foo) == "function" )
@@ -24,7 +24,7 @@ assert( x.n and (x.n == x.n) )
 
 x.foo = nil
 assert( x.foo == nil )
-x.print("foo")
+--x.print("foo")
 assert( x.tostring(123) == "123" )
 
 local proxyvalueastext = tostring(x.tostring)
