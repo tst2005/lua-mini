@@ -38,4 +38,8 @@ assert( x.tostring(123) == "updated123" )
 assert( x.tostring==x.tostring )
 assert( proxyvalueastext == tostring(x.tostring) )
 
-assert( table.concat( {x.rself("a")}, ";")  == "r;a")
+print( (x.rself("a"))== inst and "1st arg is inst" or "1st arg (inst) was removed")
+
+--assert( table.concat( {x.rself("a")}, ";")  == "r;a")
+
+
