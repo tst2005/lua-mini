@@ -55,7 +55,7 @@ local function ro2rwss(orig, map)
 				end
 				-- create a new proxy and write it to internal registry
 				proxy = f(orig, k)
-                		-- add it to internal registry
+				-- add it to internal registry
 				internal[k] = proxy
 			end
 			return proxy
