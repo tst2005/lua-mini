@@ -1,4 +1,11 @@
 local ro2rwss = require "mini.proxy.ro2rw-shadowself"
+
+--[[
+local myclass = class(...)
+local inst = instance(myclass)
+]]--
+
+-- fake a simple class instance
 local inst = {
 	print = print,
 	foo = function() return 123 end,
@@ -7,39 +14,28 @@ local inst = {
 	t = {"a table"},
 	b = true,
 }
-function inst:tostring(x) return tostring(x) end
+function inst:tostring(e) return tostring(e) end
 
-local x = ro2rwss(inst)
+-- convert an instance to an environment
+local e = ro2rwss(inst)
 
-
---print("inst", inst)
---print("x", x)
-
---print(print, x.print, x.print)
-
-assert( x.notexists == nil )
-assert( type(x.foo) == "function" )
-assert( x.b and (x.b == x.b) )
-assert( x.n and (x.n == x.n) )
-
-x.foo = nil
-assert( x.foo == nil )
---x.print("foo")
-assert( x.tostring(123) == "123" )
-
-local proxyvalueastext = tostring(x.tostring)
-
+assert( print ~= e.print)				-- e.print is a proxy for the original print function
+assert( e.notexists == nil )				-- we don't got a proxy for non existant thing
+assert( type(e.foo) == "function" )			-- e.foo is a function like the original one
+assert( e.b and (e.b == e.b) )				-- e.b is a boolean (not a proxy)
+assert( e.n and (e.n == e.n) )				-- e.n is a number (not a proxy)
+e.foo = nil						-- drop a value in the e
+assert( e.foo == nil )					-- the foo value is really lost (we don't get the original.foo or a new proxy)
+assert( e.tostring(123) == "123" )			--
+local proxyvalueastext = tostring(e.tostring)		-- remember the value as string to be compared
 function inst:tostring(x)
 	return "updated"..tostring(x)
-end
+end							-- change the instant method (yes it is ugly)
+assert( e.tostring(123) == "updated123" )		-- the proxy is still the same function but the result use the updated method
+assert( e.tostring==e.tostring )			-- the proxy function is in cache, not generated at each call
+assert( proxyvalueastext == tostring(e.tostring) ) -- compare (as string) the previous and current proxy function
 
-assert( x.tostring(123) == "updated123" )
-
-assert( x.tostring==x.tostring )
-assert( proxyvalueastext == tostring(x.tostring) )
-
-print( (x.rself("a"))== inst and "1st arg is inst" or "1st arg (inst) was removed")
-
---assert( table.concat( {x.rself("a")}, ";")  == "r;a")
-
+print( (e.rself("a"))== inst
+	and "1st arg is inst (mkproxy1 used?)"
+	or "1st arg (inst) was removed (mkproxy2 used?)")
 
