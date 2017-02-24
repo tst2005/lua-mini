@@ -1,4 +1,4 @@
-local class = require "mini.class.nano"
+local class = require "mini.class.nano8"
 local instance = assert(class.instance)
 
 do
@@ -110,8 +110,8 @@ do
 	function z:init()
 		self.foo = "ok"
 		--assert(require "mini.class.autometa"(self, z)==nil)
-		--return (require "mini.proxy.shadowself"(self)), self
-		return self
+		return (require "mini.proxy.shadowself"(self)), self
+		--return self
 	end
 	function z:metainit(mt)
 		assert(type(mt)=="table")
@@ -135,9 +135,8 @@ do
 	lock.__metatable=lock
 	lock.__locked=true
 	z.__metatable=lock
-	
-	local z1,i1 = z("Z1")
-print(z("Zx"))
+
+	local z1,i1 = z("Z1") assert(i1)
 	local z2,i2 = z("Z2")
 	for k,v in next, (getmetatable(z1)) do
 		print(k,v)

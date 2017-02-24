@@ -110,15 +110,15 @@ end
 
 function parazit:reader(k) -- like __index
 	local mask = 1 + (self.orig[k] == nil and 1 or 0)
-	return self:hook(mask, k)
+	return self:hook(mask, k, nil, "r")
 end
 
 function parazit:writer(k, v) -- like __newindex
 	local mask = 3 + (self.orig[k]~=nil and 2 or 0) + (v~=nil and 1 or 0)
-	return self:hook(mask, k, v)
+	return self:hook(mask, k, v, "w")
 end
 
-function parazit:hook(mask, k, v)
+function parazit:hook(mask, k, v, r_or_w)
 	local dispatch = {"rko", "rok", "nop","add","del","mod"}
 	--		   1      2      3     4     5     6
 	local event = dispatch[mask]
@@ -132,3 +132,9 @@ function parazit:hook(mask, k, v)
 end
 
 return parazit
+
+--[[
+ * voir  https://github.com/harningt/lua-bz2/blob/master/bz2/ltn12.lua
+
+ * voir a finalement simplifier les mod/add/del/nop/rok/rko => juste read / write ? reader / writer ? => des __index et __newindex qui catch TOUT !
+]]--
