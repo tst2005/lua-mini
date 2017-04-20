@@ -13,7 +13,8 @@ local function tprint(t, lvl)
 		return table.concat(r, "\n")
 	end
 	if type(t) == "string" then
-		return ("%q"):format(t)
+		--return ("%q"):format(t)
+		return '"'..t:gsub("[\"\\]", function(cap) return "\\"..cap end)..'"'
 	end
 	return tostring(t)
 end
