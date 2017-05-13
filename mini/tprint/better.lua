@@ -25,6 +25,10 @@ local function tprint(t, lvl, cfg)
 	local separator	= cfg.list_sep
 
 	if type(t) == "table" then
+		if cfg.seen[t] then
+			return "{--[["..tostring(t).." is a trap! ("..tostring(cfg.seen[t])..")!]]} "
+		end
+		cfg.seen[t]=(cfg.seen[t] or 0) +1
 		local r={}
 		r[#r+1]="{"
 		lvl=lvl+1 -- ident
@@ -64,8 +68,8 @@ local function tprint(t, lvl, cfg)
 	return tostring(t)
 end
 local function tprint2(t, cfg)
-	--cfg = cfg or {}
 	cfg = setmetatable(cfg or {}, {__index=M})
+	cfg.seen = cfg.seen or {}
 	return tprint(t, nil, cfg)
 end
 return setmetatable(M, {__call=function(_, ...) return tprint2(...) end})
