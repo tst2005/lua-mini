@@ -39,13 +39,12 @@ local function tprint(t, lvl, cfg)
 					line = "["..tprint(k,lvl,cfg).."]"..assign
 				end
 			else
-				if type(k) == "string" then -- it's a key/hash index
-					-- check if k is a valid identifier and not a reserved word
-					if cfg.kshort~=false
-					   and (type(identifier)~="string" or k:find(identifier))
-					   and (not reserved or not reserved(k)) then
-						line = k .. assign
-					end
+				-- it's a key/hash index and k is a valid identifier and not a reserved word
+				if type(k) == "string" and
+				   cfg.kshort~=false and
+				   (type(identifier)~="string" or k:find(identifier)) and
+				   (not reserved or not reserved(k)) then
+					line = k .. assign
 				else
 					line = "["..tprint(k,lvl,cfg).."]"..assign
 				end
