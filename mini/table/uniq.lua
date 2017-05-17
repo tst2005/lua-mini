@@ -1,5 +1,6 @@
-return function(t, inline)
-	inline = inline==nil and true or false -- inline=true by default
+return function(t, inplace)
+	-- inplace=true by default
+	if inplace == nil then inplace = true end
 
 	local new = {}
 	local last = nil
@@ -9,7 +10,7 @@ return function(t, inline)
 			last=v
 		end
 	end
-	if inline then
+	if inplace then
 		-- remove all i-indexes
 		for i=1,#t do
 			t[i]=nil
@@ -20,5 +21,5 @@ return function(t, inline)
 		end
 		return t
 	end
-	retur new
+	return new
 end
