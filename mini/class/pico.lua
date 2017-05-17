@@ -5,7 +5,7 @@ end
 
 local function class(prototype, parent)
 	local mt = {__index=parent, __call=instance}
-	return setmetatable(prototype or {}, mt) --, mt
+	return setmetatable(prototype or {}, mt), mt
 end
 
 return class
