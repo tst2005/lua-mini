@@ -1,6 +1,6 @@
 return function(t)
 	local new = {}
-	local past = nil
+	local last = nil
 	for i,v in ipairs(t) do
 		if not last or last~=v then
 			new[#new+1]=v
