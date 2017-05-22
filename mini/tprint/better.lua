@@ -9,11 +9,11 @@ local M = {
 	ishort=true,
 	kshort=true,
 	updater = nil, --[[function(t, lvl, cfg) return cfg end]]
-	nonprintable = "[%z\1-\31\127-\255]"
+	nonprintable = "[%z\1-\31\127-\255]",
 	nonprintable_names = {["\0"]="0", ["\a"]="a", ["\b"]="b", ["\t"]="t", ["\n"]="n", ["\v"]="v", ["\f"]="f", ["\r"]="r",},
 	recursivefound = function(t, lvl, count)
 		return "{--[["..tostring(t).." is a trap! ("..tostring(count)..")!]]} "
-	end
+	end,
 }
 local function tprint(t, lvl, cfg)
 	lvl = lvl or 0
