@@ -9,6 +9,8 @@ local M = {
 	ishort=true,
 	kshort=true,
 	updater = nil, --[[function(t, lvl, cfg) return cfg end]]
+	nonprintable = "[%z\1-\31\127-\255]"
+	nonprintable_names = {["\0"]="0", ["\a"]="a", ["\b"]="b", ["\t"]="t", ["\n"]="n", ["\v"]="v", ["\f"]="f", ["\r"]="r",},
 	recursivefound = function(t, lvl, count)
 		return "{--[["..tostring(t).." is a trap! ("..tostring(count)..")!]]} "
 	end
@@ -38,7 +40,7 @@ local function tprint(t, lvl, cfg)
 		local i=1 -- implicit numeric index
 		for k,v in pairs(t) do
 			local line = ""
-			if type(k) == "number" then -- it seems a numerical index 
+			if type(k) == "number" then -- it seems a numerical index
 				-- check if it is reallly the current index : it could also be a number <= 0 or a float, ...
 				if i == k and (cfg.ishort ~= false) then -- only if not deny by config
 					i=i+1 -- increment the implicit index
@@ -65,8 +67,12 @@ local function tprint(t, lvl, cfg)
 		return table.concat(r, (inline and "" or "\n"))
 	end
 	if type(t) == "string" then
+		local names = cfg.nonprintable_names
 		--return ("%q"):format(t)
-		return '"'..t:gsub("[\"\\]", function(cap) return "\\"..cap end)..'"'
+		return '"'..t:gsub("[\"\\]", function(cap) return "\\"..cap end)
+			:gsub(cfg.nonprintable, function(cap)
+				return "\\"..(names and names[cap] or string.byte(cap))
+			end)..'"'
 	end
 	return tostring(t)
 end
