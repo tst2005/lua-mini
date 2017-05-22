@@ -9,6 +9,9 @@ local M = {
 	ishort=true,
 	kshort=true,
 	updater = nil, --[[function(t, lvl, cfg) return cfg end]]
+	recursivefound = function(t, lvl, count)
+		return "{--[["..tostring(t).." is a trap! ("..tostring(count)..")!]]} "
+	end
 }
 local function tprint(t, lvl, cfg)
 	lvl = lvl or 0
@@ -26,7 +29,7 @@ local function tprint(t, lvl, cfg)
 
 	if type(t) == "table" then
 		if cfg.seen[t] then
-			return "{--[["..tostring(t).." is a trap! ("..tostring(cfg.seen[t])..")!]]} "
+			return cfg.recursivefound(t, lvl, cfg.seen[t])
 		end
 		cfg.seen[t]=(cfg.seen[t] or 0) +1
 		local r={}
