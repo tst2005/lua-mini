@@ -1,4 +1,5 @@
-local M = { indent = "\t" }
+local M = { indent = "\t", eol="\n", assign=" = ", }
+-- for inline use indent="" eol=" " assign="="
 local function tprint(t, lvl)
 	lvl = lvl or 0
 	if type(t) == "table" then
@@ -6,11 +7,11 @@ local function tprint(t, lvl)
 		r[#r+1]="{"
 		lvl=lvl+1
 		for k,v in pairs(t) do
-			r[#r+1]= (M.indent):rep(lvl).."["..tprint(k,lvl).."] = "..tprint(v,lvl)..","
+			r[#r+1]= (M.indent or ""):rep(lvl).."["..tprint(k,lvl).."]"..(M.assign or "=")..tprint(v,lvl)..","
 		end
 		lvl=lvl-1
-		r[#r+1]=(M.indent):rep(lvl).."}"
-		return table.concat(r, "\n")
+		r[#r+1]=(M.indent or ""):rep(lvl).."}"
+		return table.concat(r, (M.eol or ""))
 	end
 	if type(t) == "string" then
 		--return ("%q"):format(t)
@@ -18,4 +19,4 @@ local function tprint(t, lvl)
 	end
 	return tostring(t)
 end
-return setmetatable(M, {__call=function(_, ...) return tprint(...) end})
+return setmetatable(M, {__call=function(_, t) return tprint(t) end})
