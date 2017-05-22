@@ -35,7 +35,8 @@ local base = {
 			__index = self,
 			__call = function(self, ...)
 				local instance = setmetatable({}, meta)
-				return assert(instance:init(...), "instance is nil ? check the class:init() function return")
+--				return assert(instance:init(...), "instance is nil ? check the class:init() function return")
+				return instance:init(...)
 			end,
 		})
 	end,
