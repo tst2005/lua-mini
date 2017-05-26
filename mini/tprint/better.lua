@@ -15,6 +15,21 @@ local M = {
 		return "{--[["..tostring(t).." is a trap! ("..tostring(count)..")!]]} "
 	end,
 }
+
+local function doublequote_dump_string(s, nonprintable_pat, nonprintable_names)
+	nonprintable_pat = nonprintable_pat or "[%z\1-\31\127-\255]"
+	nonprintable_names = nonprintable_names or {["\0"]="0", ["\a"]="a", ["\b"]="b", ["\t"]="t", ["\n"]="n", ["\v"]="v", ["\f"]="f", ["\r"]="r",}
+	local byte = string.byte
+	return '"'..(s
+		:gsub("[\"\\]", function(cap)
+			return "\\"..cap
+		end)
+		:gsub(nonprintable_pat, function(cap)
+			return "\\"..(nonprintable_names[cap] or tostring(byte(cap)))
+		end)
+	)..'"'
+end
+
 local function tprint(t, lvl, cfg)
 	lvl = lvl or 0
 	cfg = cfg or {}
@@ -67,12 +82,8 @@ local function tprint(t, lvl, cfg)
 		return table.concat(r, (inline and "" or "\n"))
 	end
 	if type(t) == "string" then
-		local names = cfg.nonprintable_names
 		--return ("%q"):format(t)
-		return '"'..t:gsub("[\"\\]", function(cap) return "\\"..cap end)
-			:gsub(cfg.nonprintable, function(cap)
-				return "\\"..(names and names[cap] or string.byte(cap))
-			end)..'"'
+		return doublequote_dump_string(t, cfg.nonprintable, cfg.nonprintable_names)
 	end
 	return tostring(t)
 end
