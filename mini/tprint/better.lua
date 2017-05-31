@@ -11,8 +11,9 @@ local M = {
 	updater = nil, --[[function(t, lvl, cfg) return cfg end]]
 	nonprintable = "[%z\1-\31\127-\255]",
 	nonprintable_names = {["\0"]="0", ["\a"]="a", ["\b"]="b", ["\t"]="t", ["\n"]="n", ["\v"]="v", ["\f"]="f", ["\r"]="r",},
-	recursivefound = function(t, lvl, count)
-		return "{--[["..tostring(t).." is a trap! ("..tostring(count)..")!]]} "
+	recursivefound = function(t, lvl, cfg)
+		cfg.seen[t]=(cfg.seen[t] or 0) +1
+		return "{--[["..tostring(t).." is a trap! ("..tostring(cfg.seen[t])..")!]]} "
 	end,
 }
 
@@ -46,9 +47,9 @@ local function tprint(t, lvl, cfg)
 
 	if type(t) == "table" then
 		if cfg.seen[t] then
-			return cfg.recursivefound(t, lvl, cfg.seen[t])
+			return cfg.recursivefound(t, lvl, cfg)
 		end
-		cfg.seen[t]=(cfg.seen[t] or 0) +1
+		cfg.seen[t]=0
 		local r={}
 		r[#r+1]="{"
 		lvl=lvl+1 -- ident
