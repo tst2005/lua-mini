@@ -1,3 +1,5 @@
+-- https://stackoverflow.com/questions/39211316/how-can-i-structurally-deep-compare-2-lua-tables-which-may-contain-cyclic-refere
+
 local tprint = require "mini.tprint.better"
 
 local function recursivefound(t, lvl, cfg)
