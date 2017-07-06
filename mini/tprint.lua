@@ -42,7 +42,7 @@ local function tprint(t, lvl, cfg)
 	local assign	= cfg.assign
 	local identifier = cfg.identifier
 	local reserved	= cfg.reserved
-	local inline	= cfg.inline	
+	local inline	= cfg.inline
 	local separator	= cfg.list_sep
 
 	if type(t) == "table" then
@@ -56,23 +56,16 @@ local function tprint(t, lvl, cfg)
 		local i=1 -- implicit numeric index
 		for k,v in pairs(t) do
 			local line = ""
-			if type(k) == "number" then -- it seems a numerical index
-				-- check if it is reallly the current index : it could also be a number <= 0 or a float, ...
-				if i == k and (cfg.ishort ~= false) then -- only if not deny by config
-					i=i+1 -- increment the implicit index
-				else
-					line = "["..tprint(k,lvl,cfg).."]"..assign
-				end
+			-- if k is a numerical index
+			-- check if it is reallly the current index : it could also be a number <= 0 or a float, ...
+			-- only if not deny by config
+			if type(k) == "number" and i == k and (cfg.ishort ~= false) then
+				i=i+1 -- increment the implicit index
+			-- it's a key/hash index and k is a valid identifier and not a reserved word
+			elseif type(k) == "string" and cfg.kshort~=false and (type(identifier)~="string" or k:find(identifier)) and (not reserved or not reserved(k)) then
+				line = k .. assign
 			else
-				-- it's a key/hash index and k is a valid identifier and not a reserved word
-				if type(k) == "string" and
-				   cfg.kshort~=false and
-				   (type(identifier)~="string" or k:find(identifier)) and
-				   (not reserved or not reserved(k)) then
-					line = k .. assign
-				else
-					line = "["..tprint(k,lvl,cfg).."]"..assign
-				end
+				line = "["..tprint(k,lvl,cfg).."]"..assign
 			end
 			-- the content value
 			r[#r+1]= (inline and "" or (indent):rep(lvl)) .. line .. tprint(v,lvl,cfg)..(separator)
