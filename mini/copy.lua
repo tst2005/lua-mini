@@ -16,6 +16,8 @@ local defaultway = {
 	thread		= fail,
 	userdata	= fail,
 --	file		= fail,
+	_pass = pass,
+	_fail = fail,
 }
 
 local function copy(orig, way)
