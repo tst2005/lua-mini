@@ -8,15 +8,11 @@ return function(src, dst)
 	local del = {}
 	for k,v in pairs(dst) do
 		if src[k]==nil then -- if not exists
-			del[#del+1]=k -- mark the field to be deleted
+			del[k]=true -- mark the field to be deleted
 		end
 	end
-	for _i,k in ipairs(del) do
---		if type(k)=="number" and k <= #dst then
---			table.remove(dst,k)
---		else
-			dst[k]=nil
---		end
+	for k in pairs(del) do
+		dst[k]=nil -- remove the marked field outside of the dst loop
 	end
 	return dst
 end
