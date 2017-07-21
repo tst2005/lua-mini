@@ -61,11 +61,20 @@ local function tprint(t, lvl, cfg)
 			-- only if not deny by config
 			if type(k) == "number" and i == k and (cfg.ishort ~= false) then
 				i=i+1 -- increment the implicit index
+--	"two",
+--	AST: `Id{ "two" }
 			-- it's a key/hash index and k is a valid identifier and not a reserved word
 			elseif type(k) == "string" and cfg.kshort~=false and (type(identifier)~="string" or k:find(identifier)) and (not reserved or not reserved(k)) then
 				line = k .. assign
+--	foo="FOO",
+--	AST: `Pair{ `String{ "foo" }, `String{ "FOO" } }
 			else
 				line = "["..tprint(k,lvl,cfg).."]"..assign
+--	["foo"]="FOO",
+--	AST: `Pair{ `String{ "foo" }, `String{ "FOO" } }
+-- or
+--	[1]="one",
+--	AST: `Pair{ `Number{ 1 }, `Id{ "one" } }
 			end
 			-- the content value
 			r[#r+1]= (inline and "" or (indent):rep(lvl)) .. line .. tprint(v,lvl,cfg)..(separator)
