@@ -4,11 +4,11 @@ return function(G)
 	local tonumber52 = require( modname:gsub("%.to5.*$","")..".to52" ) -- tonumber.to52
 	return function(e, base)
 		if base ~= nil then
-			if type(base) ~= "boolean" then
-				error("arg2 must be boolean",2)
+			if type(base) ~= "number" then
+				error("bad argument #2 to 'tonumber' (number expected, got "..type(base)..")",2)
 			end
 			if type(e) ~= "string" then
-				error("arg1 must be a string",2)
+				error("bad argument #1 to 'tonumber' (string expected, got "..type(e)..")",2)
 			end
 		end
 		return tonumber52(e, base)

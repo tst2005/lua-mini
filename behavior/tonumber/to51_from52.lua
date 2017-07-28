@@ -1,12 +1,9 @@
 local args = {...}
 return function(_G)
-	local orig_tonumber = _G.tonumber -- 5.2 or more
+	local orig_tonumber = _G.tonumber -- 53 or more
 	return function(e, base)
-		-- 3   3.0   3.1416   314.16e-2   0.31416E1   -- 0xff   0x56
-		if base==10 then
-			--if tostring(e):find("^[-]*[0-9]*[%.]*[0-9]*[eE][%-]*[0-9]*$") then -- FIXME: fix the detection pattern ...
-			return orig_tonumber(e, nil)
-			--end
+		if base ~= nil and type(base) ~= "number" then
+			return nil -- lua <= 5.2 behavior
 		end
 		return orig_tonumber(e, base)
 	end

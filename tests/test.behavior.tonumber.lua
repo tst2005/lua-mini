@@ -3,7 +3,8 @@ local tonumber52 = require "behavior.tonumber.to52"
 local tonumber51 = require "behavior.tonumber.to51"
 
 -- tonumber lua 5.2+ --
-do
+do	print("tonumber lua5.2 ...")
+
 	local tonumber = tonumber52
 	assert( ("%2.2f"):format( tonumber("10.2") or 0) == "10.20")
 
@@ -12,6 +13,7 @@ do
 
 	for _i, invalid_base in ipairs{ true, false, {}, "z" } do
 		local ok, msg = pcall( function() tonumber("-10", invalid_base) end)
+		--print(ok, msg)
 		assert( not ok and msg and msg:find("number expected, got "..type(invalid_base)) )
 	end
 
@@ -21,13 +23,13 @@ do
 	end
 
 	assert( tonumber(10) == 10 )
-	assert( tonumber(10.2, 10) == nil )
-
-	assert( tonumber(10.0,10) == 10 )
+--	assert( tonumber(10.2, 10) == nil ) -- lua 5.1-5.2, but not lua 5.3
+--	assert( tonumber(10.0,10) == 10 )
 end
 
 -- tonumber lua 5.1 --
-do
+do	print("tonumber lua5.1 ...")
+
 	local tonumber = tonumber51
 	--print("lua 5.1")
 
@@ -36,7 +38,9 @@ do
 	end
 end
 
-do -- tonumber lua 5.3
+-- tonumber lua 5.3
+do	print("tonumber lua5.3 ...")
+
 	assert( not pcall(tonumber53, 1.2, 10) )
 	assert( pcall(tonumber52, 1.2, 10) )
 	assert( pcall(tonumber51, 1.2, 10) )

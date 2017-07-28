@@ -34,6 +34,8 @@ if vm=="52" and not pcall(orig_tonumber, 1.2, 10) then -- error == 5.3
 	vm="53"
 end
 if vm==wanted then
+	print("from/to", wanted, "pass")
 	return orig_tonumber
 end
+print("from", vm, "to", wanted, modname.."_from"..vm)
 return require(modname.."_from"..vm)(_G)
