@@ -1,3 +1,4 @@
+local tonumber53 = require "behavior.tonumber.to53"
 local tonumber52 = require "behavior.tonumber.to52"
 local tonumber51 = require "behavior.tonumber.to51"
 
@@ -34,4 +35,16 @@ do
 		assert(type( tonumber51(s, 10) )=="number")
 	end
 end
+
+do -- tonumber lua 5.3
+	assert( not pcall(tonumber53, 1.2, 10) )
+	assert( pcall(tonumber52, 1.2, 10) )
+	assert( pcall(tonumber51, 1.2, 10) )
+
+	local r = math.random()
+	assert( not pcall(tonumber53, r, 10) )
+	assert( pcall(tonumber52, r, 10) )
+	assert( pcall(tonumber51, r, 10) )
+end
+
 print("ok")
