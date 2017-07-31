@@ -13,8 +13,9 @@ do	print("tonumber lua5.2 ...")
 
 	for _i, invalid_base in ipairs{ true, false, {}, "z" } do
 		local ok, msg = pcall( function() tonumber("-10", invalid_base) end)
+		assert(not ok, "should fail but got: "..tostring(msg).." for tonumber(\"-10\", "..tostring(invalid_base)..")")
 		--print(ok, msg)
-		assert( not ok and msg and msg:find("number expected, got "..type(invalid_base)) )
+		assert( msg and msg:find("number expected, got "..type(invalid_base)) )
 	end
 
 	for _i, valid_base in ipairs{ 2, 10, 16, 35 } do
