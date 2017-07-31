@@ -5,3 +5,4 @@ local function merge_all(a, b, ...)
 	end
 	return inplace(a,b)
 end
+return merge_all
