@@ -1,8 +1,8 @@
 local tonew = require "mini.table.merge.tonew"
-local function merge_all(a, b, ...)
-	if type(...)=="table" then
-		return merge_all(merge_all(a,b), ...)
-	end
-	return tonew(a,b)
+return function(a, ...)
+        local t_args = {...}
+        for _i,b in ipairs(t_args) do
+                a = tonew(a,b)
+        end
+        return a
 end
-return merge_all
