@@ -69,6 +69,14 @@ local function ro2rwss(orig, map)
 				internal[k] = v
 			end
 		end,
+		__ipairs = function(self, ...)
+			local mt = getmetatable(orig)
+			if mt and type(mt.__ipairs)=="function" then
+				return mt.__ipairs(orig, ...)
+			end
+			--return ipairs(orig, ...)
+			return nil
+		end
 	})
 end
 
