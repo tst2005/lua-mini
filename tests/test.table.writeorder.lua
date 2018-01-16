@@ -19,3 +19,23 @@ for i=1,10000 do
 end
 print("---")
 for k,v in pairs(t) do print(k,v) end
+
+print("---")
+do
+	local t = wo()
+	t["a"]="1"
+	t["b"]="2"
+	t["r"]="3"
+	t["aa"]="4"
+	t["z"]="5"
+
+	t["b"]="6"
+	for k,v in pairs(t) do print(k,v) end
+
+	t["b"]=nil
+	t["b"]=nil
+	t["b"]="6"
+	t["bb"]="7"
+
+	for k,v in pairs(t) do print(k,v) end
+end

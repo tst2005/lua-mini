@@ -35,7 +35,44 @@ assert( e.tostring(123) == "updated123" )		-- the proxy is still the same functi
 assert( e.tostring==e.tostring )			-- the proxy function is in cache, not generated at each call
 assert( proxyvalueastext == tostring(e.tostring) ) -- compare (as string) the previous and current proxy function
 
+do							-- refuse to wrap an unknown type of data (a file descriptor, aka userdata type)
+	inst.testerr = io.stdout
+	local ok, err = pcall(function() return e.testerr end)
+	assert(not ok)
+	inst.testerr = nil
+end
+do
+	print("list e:")
+	for k,v in pairs(e) do
+		print(k,v)
+	end
+	print("/list")
+end
+
 print( (e.rself("a"))== inst
 	and "1st arg is inst (mkproxy1 used?)"
 	or "1st arg (inst) was removed (mkproxy2 used?)")
 
+do
+	local orig = {
+		print=print,
+	}
+	function orig:_pub_print(...) self.print("XX", ...) end
+	function orig.join(_self, ...) return table.concat({...}, ",") end
+	function orig:_pub_join(...) return self:join(...) end
+
+	local function mkproxy1prefix(orig, k)
+	        if type(k)=="string" then
+        	        local prefix = "_pub_"
+	                return function(...)
+                        	return orig[prefix..k](orig, ...)
+                	end
+        	end
+	end
+	local map = {
+		["function"] = mkproxy1prefix,
+	}
+	local p = ro2rwss(orig, map)
+	--p.print("a") -- print: XX a
+	assert(p.join("a", "b", "c")=="a,b,c")
+end

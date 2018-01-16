@@ -19,7 +19,7 @@ local function low_newtable(t, mt)
 --	local mt = {}
  
 	function mt:__newindex(key, val)
---print("DEBUG: writeorder.newtable: rawset", key, val)
+print("DEBUG: writeorder.newtable: rawset", key, val)
 		rawset(self, key, val)
 		if nextkey[key] == nil then
 			nextkey[nextkey[nextkey]] = key		-- lastkey = nextkey[nextkey] ; nextkey[lastkey] = key

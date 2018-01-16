@@ -1,5 +1,6 @@
 
 -- TOSEE: https://bitbucket.org/doub/path
+-- TOSEE: https://github.com/torch/paths : https://github.com/torch/paths/blob/master/doc/filenames.md
 
 local string_split = require "mini.string.split"
 local shallowcopy = require "mini.table.shallowcopy"
