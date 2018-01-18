@@ -1,12 +1,27 @@
-local ro2rwss = require "mini.proxy.ro2rw-shadowself-metaproxy"
-ro2rwss.defaultmap.table = true -- disable error in case of proxy request for a table
+
+local G = {type=type, setmetatable=setmetatable, assert=assert, error=error, next=next}
+local mkproxies = require "mini.proxy.mkproxies"({type=type})
+local mkproxy2 = assert(mkproxies.mkproxy2)
+
+-- nil|false = error
+-- true = return direct value
+-- function = call it with (orig, k)
+local map = {
+	["boolean"] = true,
+	["number"] = true,
+	["string"] = true,
+	["function"] = mkproxy2,
+--	["table"] = function() error("TODO: make a wrapper for table", 2) end,
+	["table"] = true, -- disable error in case of proxy request for a table
+	["DEFAULT"] = false,
+}
+local ro2rw_mp = require "mini.proxy.ro2rw-metaproxy"(G)
+
 
 --[[
 local myclass = class(...)
 local inst = instance(myclass)
 ]]--
-
-
 
 -- fake a simple class instance
 local inst = {
@@ -20,7 +35,7 @@ local inst = {
 function inst:tostring(e) return tostring(e) end
 
 -- convert an instance to an environment
-local e = ro2rwss(inst)
+local e = ro2rw_mp(inst, map)
 
 assert( print ~= e.print)				-- e.print is a proxy for the original print function
 assert( e.notexists == nil )				-- we don't got a proxy for non existant thing
@@ -42,11 +57,17 @@ print( (e.rself("a"))== inst
 	and "1st arg is inst (mkproxy1 used?)"
 	or "1st arg (inst) was removed (mkproxy2 used?)")
 
-print("orig print=", print)
+do
+	print("inst[*]:")
+	for k,v in pairs(inst) do
+		print("<"..type(k)..">"..tostring(k),v)
+	end
+	print("/inst")
+end
 do      
 	print("list e:")
 	for k,v in pairs(e) do
-		print(k,v)
+		print("<"..type(k)..">"..tostring(k),v)
 	end
 	print("/list")
 end
