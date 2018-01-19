@@ -1,8 +1,9 @@
 
 local G = {type=type, setmetatable=setmetatable, assert=assert, error=error}
 
-local mkproxies = require "mini.proxy.mkproxies"({type=type})
-local mkproxy2 = mkproxies.mkproxy2
+local mkproxies = require "mini.proxy.ro2rw.mkproxies"({type=type})
+local mkproxy1, mkproxy1prefix = mkproxies.mkproxy1, mkproxies.mkproxy1prefix
+local mkproxy2, mkproxy2prefix = mkproxies.mkproxy2, mkproxies.mkproxy2prefix
 
 -- nil|false = error
 -- true = return direct value
@@ -39,10 +40,8 @@ local function ro2rwss(orig, map)
 				if f == true then
 					return orig[k]
 				end
-				-- create a new proxy and write it to internal registry
-				proxy = f(orig, k)
-				-- add it to internal registry
-				internal[k] = proxy
+				proxy = f(orig, k)		-- create a new proxy and write it to internal registry
+				internal[k] = proxy		-- add it to internal registry
 			end
 			return proxy
 		end,
@@ -54,27 +53,6 @@ local function ro2rwss(orig, map)
 			else
 				internal[k] = v
 			end
-		end,
-		__ipairs = function(self, ...)
-			local mt = getmetatable(orig)
-			if mt and type(mt.__ipairs)=="function" then
-				return mt.__ipairs(orig, ...)
-			end
-			--return ipairs(orig, ...)
-			return nil
-		end,
-		__pairs = function(_self, ...)
-			G.assert(_self ~= orig) -- or return nil ?
-			-- here return a special iterator
-			--	lookup key into the orig table
-			-- for k in pairs(orig) do
-			--	ignore deleted key, if value exist return the __index(_self, k) value ?
-
-			local mt = getmetatable(orig)
-			if mt and type(mt.__pairs)=="function" then
-				return mt.__pairs(orig, ...)
-			end
-			return nil
 		end,
 	})
 end

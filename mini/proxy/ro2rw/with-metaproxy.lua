@@ -15,7 +15,6 @@ local defaultmap = {
 	["DEFAULT"] = false,
 }
 ]]--
-
 return function(G)
 	local function ro2rw_mp(orig, map)
 		G.assert(G.type(orig)=="table")

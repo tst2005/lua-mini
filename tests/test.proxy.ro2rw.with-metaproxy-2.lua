@@ -1,27 +1,13 @@
 
-local G = {type=type, setmetatable=setmetatable, assert=assert, error=error, next=next}
-local mkproxies = require "mini.proxy.mkproxies"({type=type})
+local G = {type=type, setmetatable=setmetatable, assert=assert, error=error, next=next, pairs=pairs}
+local mkproxies = require "mini.proxy.ro2rw.mkproxies"({type=type})
 local mkproxy2 = assert(mkproxies.mkproxy2)
 
--- nil|false = error
--- true = return direct value
--- function = call it with (orig, k)
-local map = {
-	["boolean"] = true,
-	["number"] = true,
-	["string"] = true,
+local map = require "mini.proxy.ro2rw.mkmap"(G)({
 	["function"] = mkproxy2,
---	["table"] = function() error("TODO: make a wrapper for table", 2) end,
 	["table"] = true, -- disable error in case of proxy request for a table
-	["DEFAULT"] = false,
-}
-local ro2rw_mp = require "mini.proxy.ro2rw-metaproxy"(G)
-
-
---[[
-local myclass = class(...)
-local inst = instance(myclass)
-]]--
+})
+local ro2rw = require "mini.proxy.ro2rw.with-metaproxy"(G)
 
 -- fake a simple class instance
 local inst = {
@@ -35,7 +21,7 @@ local inst = {
 function inst:tostring(e) return tostring(e) end
 
 -- convert an instance to an environment
-local e = ro2rw_mp(inst, map)
+local e = ro2rw(inst, map)
 
 assert( print ~= e.print)				-- e.print is a proxy for the original print function
 assert( e.notexists == nil )				-- we don't got a proxy for non existant thing
