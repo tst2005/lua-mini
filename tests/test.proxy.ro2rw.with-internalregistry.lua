@@ -7,7 +7,7 @@ local map = require "mini.proxy.ro2rw.mkmap"(G)({
 	["function"] = mkproxy2,
 	["table"] = true, -- disable error in case of proxy request for a table
 })
-local ro2rw = require "mini.proxy.ro2rw.with-metaproxy"(G)
+local ro2rw = require "mini.proxy.ro2rw.with-internalregistry"(G)
 
 -- fake a simple class instance
 local inst = {
