@@ -24,19 +24,21 @@ local function mkproxy1(orig, k)
 end
 ```
 
-Si vous avez du mal a lire ce code, voici une version qui pourra peut-être vous aidez.
+Vous avez peut-être du mal à lire ou comprendre ce code...
+Reprenons depuis le début!
 
 # A quoi sert un proxy ?
 
-Un proxy est une fonction différente qui fait la meme chose.
-C'est un élément qui fait "relai" ou qui fait semblant d'être l'originale en ne l'étant pas.
+Un proxy est une fonction différente (distincte) qui fait la meme chose que l'original.
 
 ## un exemple simple
 
 ```lua
+-- la fonction hello ci dessous sera notre fonction originale
 local function hello()
 	return "hello world"
 end
+-- nous pouvons crééer une autre fonction nommée proxy qui utilisera l'original et renverra son résultat
 local function proxy()
 	return hello()
 end
@@ -46,18 +48,21 @@ print("hello", hello)
 print("proxy", proxy)
 print(hello == proxy) -- false, proxy est différent de hello
 ```
+En apparence on voit qu'elles sont différentes mais a l'utilisation elle semble bien identique.
 
 ## un générateur de proxy
 
+
+
 ```lua
-local function hello()
+local function hello() -- notre fonction originale
 	return "hello world"
 end
-local function mkproxy(f)
-	local p = function()
+local function mkproxy(f) -- f pourra être la fonction hello ou une autre fonction!
+	local proxy = function() -- On créé toujours un nouveau `proxy`. Si on utilise 2 fois la fonction mkproxy elle renverra 2 fonctions distinctes.
 		return f()
 	end
-	return p
+	return proxy
 end
 local proxy = mkproxy(hello)
 print(hello()) -- hello world
@@ -94,6 +99,8 @@ print(t.hello == t2.hello) -- false, les fonctions sont différentes
 print(t.hello() == t2.hello()) -- true, les résultats sont identiques
 ```
 
+
+
 # générateur de proxy pour avec original dynamique
 
 ```lua
@@ -119,4 +126,4 @@ print(t.hello() == t2.hello()) -- les résultats sont a nouveau identiques
 
 C'est utile lorsqu'on souhaite laisser utiliser une fonction (ou un ensemble de fonction) sans y laisser accès directement.
 
-Je l'utilise pour `ro2rw` ...
+Je l'utilise pour `ro2rw`, `mkproxy` et ses variantes sont un petit rouage d'une plus grosse machine!
