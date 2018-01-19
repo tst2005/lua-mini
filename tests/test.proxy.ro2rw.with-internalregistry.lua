@@ -8,6 +8,10 @@ local map = require "mini.proxy.ro2rw.mkmap"(G)({
 	["table"] = true, -- disable error in case of proxy request for a table
 })
 local ro2rw = require "mini.proxy.ro2rw.with-internalregistry"(G)
+local mkmetaproxy = require "mini.proxy.ro2rw.mkmetaproxy"(G)
+local ro2rw_simple = function(orig)
+	return ro2rw(orig, map, mkmetaproxy)
+end
 
 -- fake a simple class instance
 local inst = {
@@ -21,7 +25,7 @@ local inst = {
 function inst:tostring(e) return tostring(e) end
 
 -- convert an instance to an environment
-local e = ro2rw(inst, map)
+local e = ro2rw_simple(inst)
 
 assert( print ~= e.print)				-- e.print is a proxy for the original print function
 assert( e.notexists == nil )				-- we don't got a proxy for non existant thing
