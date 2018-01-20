@@ -37,16 +37,31 @@ return function(G)
 					return v			-- there is any other value, return it
 				end
 				-- at this step:  v == nil, now we lookup into internal
+				local function getk2(orig, k)
+					local prefix = orig._pubprefix
+					if prefix then
+						if G.type(k)~="string" then
+							return nil
+						end
+						return prefix..k
+					else
+						return k
+					end
+				end
+				local k2 = getk2(orig, k)
+				if k2 == nil then return nil end
+
 				local proxy = internal[k]
-				if proxy == nil and orig[k] ~= nil then		-- there is no proxy for now, and the instance has a method to proxy
-					local f = map[G.type(orig[k])] or map["DEFAULT"]
+				local meth = orig[k2]
+				if proxy == nil and meth ~= nil then	-- there is no proxy for now, and the instance has a method to proxy
+					local f = map[G.type(meth)] or map["DEFAULT"]
 					if not f then
-						G.error("unable to wrap data type "..G.type(orig[k]), 2) -- FIXME: silence error ?
+						G.error("unable to wrap data type "..G.type(meth), 2) -- FIXME: silence error ?
 					end
 					if f == true then
-						return orig[k]
+						return meth
 					end
-					proxy = f(orig, k)			-- create a new proxy and write it to internal registry
+					proxy = f(orig, k2)			-- create a new proxy and write it to internal registry
 					internal[k] = proxy			-- add it to internal registry
 				end
 				return proxy

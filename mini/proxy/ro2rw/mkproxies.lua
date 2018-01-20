@@ -18,17 +18,21 @@ return function(G)
 			return filter( orig[k](orig, ...) )
 		end
 	end
+--[[
 	local function mkproxy1prefix(orig, k)
 		if G.type(k)=="string" then
 			local prefix = orig._pubprefix or ""
-			return function(...)
-				return orig[prefix..k](orig, ...)
+			if orig[prefix..k] then
+				return function(...)
+					return orig[prefix..k](orig, ...)
+				end
 			end
 		end
 	end
 	local function mkproxy2prefix(orig, k)
 		if G.type(k)=="string" then
 			local prefix = orig._pubprefix or ""
+			if not orig[prefix..k] then return nil end
 			return function(...)
 				local function filter(a, ...)
 					if a == orig then
@@ -41,12 +45,14 @@ return function(G)
 			end
 		end
 	end
-	
+]]--	
 	local M = {
 		mkproxy1 = mkproxy1,
 		mkproxy2 = mkproxy2,
+--[[
 		mkproxy1prefix = mkproxy1prefix,
 		mkproxy2prefix = mkproxy2prefix,
+]]--
 	}
 	return M
 end
