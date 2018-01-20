@@ -18,14 +18,14 @@ local defaultmap = {
 -- local mkmetaproxy = require "mini.proxy.ro2rw.mkmetaproxy"(G)
 
 return function(G)
-	local function ro2rw(orig, map, mkmetaproxy)
+	local function ro2rw(orig, map, mkmetaproxy, methodprefix)
 		G.assert(G.type(orig)=="table")
 		G.assert(G.type(map)=="table", "missing map argument")
 
 		local lost = {} -- uniq value
 		local internal = {} -- the internal table use to store value (initial proxy) -- could be used for internal registry access
 		local update = {} -- used to remind deleted keys (updated value: lost for nil, else custom value)
-	
+
 		local mt = {
 			__index=function(_self, k)
 				G.assert(_self ~= orig)			-- never expose the original instance object
@@ -37,19 +37,9 @@ return function(G)
 					return v			-- there is any other value, return it
 				end
 				-- at this step:  v == nil, now we lookup into internal
-				local function getk2(orig, k)
-					local prefix = orig._pubprefix
-					if prefix then
-						if G.type(k)~="string" then
-							return nil
-						end
-						return prefix..k
-					else
-						return k
-					end
-				end
-				local k2 = getk2(orig, k)
-				if k2 == nil then return nil end
+
+				local concatable, k2 = pcall(function() return (methodprefix or "")..k end)
+				if not concatable then return nil end -- do not support impossible fieldname
 
 				local proxy = internal[k]
 				local meth = orig[k2]
