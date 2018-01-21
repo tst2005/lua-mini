@@ -38,8 +38,12 @@ return function(G)
 				end
 				-- at this step:  v == nil, now we lookup into internal
 
-				local concatable, k2 = pcall(function() return (methodprefix or "")..k end)
-				if not concatable then return nil end -- do not support impossible fieldname
+				local concatable, k2 = pcall(function()
+					return (methodprefix or "")..k
+				end)
+				if not concatable then
+					return nil
+				end -- do not support impossible fieldname
 
 				local proxy = internal[k]
 				local meth = orig[k2]
