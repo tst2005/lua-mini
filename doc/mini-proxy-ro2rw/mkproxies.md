@@ -1,4 +1,4 @@
-Le fichier étudier dans ce document est [mini/proxy/ro2rw/mkproxies.lua](https://github.com/tst2005/lua-mini/blob/dev/mini/proxy/ro2rw/mkproxies.lua#L4-L8)
+Le fichier étudié dans ce document est [mini/proxy/ro2rw/mkproxies.lua](https://github.com/tst2005/lua-mini/blob/dev/mini/proxy/ro2rw/mkproxies.lua#L4-L8)
 
 C'est un module qui contient une fonction `mkproxy` en plusieurs variantes.
 * `mkproxy1`
@@ -7,12 +7,12 @@ C'est un module qui contient une fonction `mkproxy` en plusieurs variantes.
 * `mkproxy2prefix`
 
 J'aurais pu faire plusieurs fichiers séparés mais au vu de la faible longueur et de la grande similitude entre les variantes,
-j'ai préféré les avoir au meme endroit.
+j'ai préféré les avoir au même endroit.
 
 # Quelle est cette fonction ?
 
 Il s'agit de la fonction que j'ai nommé `mkproxy` (pour "make proxy")
-Commencons pas la version plus simple `mkproxy1`.
+Commencons par la version la plus simple `mkproxy1`.
 
 ## mkproxy1, la version simple
 
@@ -48,7 +48,7 @@ print("hello", hello)
 print("proxy", proxy)
 print(hello == proxy) -- false, proxy est différent de hello
 ```
-En apparence on voit qu'elles sont différentes mais a l'utilisation elle semble bien identique.
+En apparence on voit qu'elles sont différentes mais à l'utilisation elles semblent bien identiques.
 
 ## un générateur de proxy
 
@@ -74,7 +74,7 @@ print(hello == proxy) -- false, proxy est différent de hello
 # un générateur de proxy avec argument
 
 Jusqu'à présent les exemples ont été fait avec une fonction originale `hello` qui ne prennait pas d'argument.
-Il suffit de modifier légèrement le code pour passer les arguments recu par le proxy a la fonction orignale.
+Il suffit de modifier légèrement le code pour passer les arguments reçus par le proxy à la fonction orignale.
 
 Voici un fonction hello avec argument
 ```lua
@@ -83,7 +83,7 @@ local function hello(who)
 end
 ```
 
-Et voici le générateur de proxy avec argument
+Et voiçi le générateur de proxy avec argument
 ```lua
 local function mkproxyarg(f)
 	local proxy = function(...)
@@ -101,7 +101,7 @@ print(proxy("people"), "hello people") -- hello people
 
 # générateur de proxy pour un élément de table
 
-Contrairement aux exemples simple a qui on donne une fonction à utiliser (la fonction `hello` précédement),
+Contrairement aux exemples simples à qui on donne une fonction à utiliser (la fonction `hello` précédement),
 ma fonction `mkproxy1` est prévue pour utiliser une table contenant des fonctions.
 
 ```lua
@@ -114,8 +114,8 @@ local function mkproxytable(orig, k) -- orig est une table, k est le nom d'un é
 end
 ```
 Si la fonction `hello` définie plus haut était dans une table.
-On peut créé une 2eme table `t2` (différente de la 1ère table `t`) dans laquelle on met un proxy à l'élément "hello".
-On obtiendra donc `t.hello` et `t2.hello`, l'une la fonction originale, l'autre le proxy de la 1ère.
+On peut créer une 2ème table `t2` (différente de la 1ère table `t`) dans laquelle on met un proxy à l'élément "hello".
+On obtiendra donc `t.hello` et `t2.hello`, l'une est la fonction originale, l'autre le proxy de la 1ère.
 
 ```lua
 local t = {["hello"] = hello}
@@ -139,7 +139,7 @@ print(t.hello()==t2.hello()) -- false, les résultats ne sont plus identiques!
 ```
 
 Si comme moi vous voulez qu'à chaque appel du `proxy` il consulte la fonction qu'il y aura dans la table originale,
-afin de suite les changements éventuels de l'original.
+afin de refléter les changements éventuels de l'original.
 
 Voici donc la variante de mkproxytable pour toujours prendre la fonction originale au moment où on l'utilise.
 
@@ -188,13 +188,13 @@ print(t.hello() == t2.hello()) -- les résultats sont a nouveau identiques
 # Qu'est-ce qu'un proxy d'object ?
 
 Au final si on compare `mkproxytable2c` et `mkproxy1` il reste une différence notable.
-Dans tous les exemples cités J'ai cherché a produire un proxy qui appelerait une fonction originale de facon identique a l'utilisation qu'on fait de cette fonction originale.
+Dans tous les exemples cités j'ai cherché à produire un proxy qui appelerait une fonction originale de façon identique à l'utilisation qu'on fait de cette fonction originale.
 
-En lua les systemes de classes et instances sont construites a partir de table.
+En lua les systèmes de classes et instances sont construites à partir de table.
 En lua une instance sera une table.
 
 Le but de mes `mkproxy` est de mémoriser cette instance originale (qui sera une table)
-mais lors de l'utilisation cette table sera ajouter en 1er argument.
+mais lors de l'utilisation cette table sera ajouté en 1er argument.
 
 # Dans quel cas ai-je besoin de ces fonctions `mkproxy` ?
 
