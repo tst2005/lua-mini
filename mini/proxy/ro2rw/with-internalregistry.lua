@@ -22,9 +22,9 @@ return function(G)
 		G.assert(G.type(orig)=="table")
 		G.assert(G.type(map)=="table", "missing map argument")
 
-		local lost = {} -- uniq value
-		local internal = {} -- the internal table use to store value (initial proxy) -- could be used for internal registry access
-		local update = {} -- used to remind deleted keys (updated value: lost for nil, else custom value)
+		local lost = {}		-- the lost mark (an table used as uniq value)
+		local internal = {}	-- the internal table use to store value (initial proxy) -- could be used for internal registry access
+		local update = {}	-- used to remind deleted keys (updated value: lost for nil, else custom value)
 
 		local mt = {
 			__index=function(_self, k)
