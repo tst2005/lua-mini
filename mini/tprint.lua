@@ -44,6 +44,7 @@ local function tprint(t, lvl, cfg)
 	local reserved	= cfg.reserved
 	local inline	= cfg.inline
 	local separator	= cfg.list_sep
+	local skipassign = cfg.skipassign
 
 	if type(t) == "table" then
 		if cfg.seen[t] then
@@ -55,30 +56,31 @@ local function tprint(t, lvl, cfg)
 		lvl=lvl+1 -- ident
 		local i=1 -- implicit numeric index
 		for k,v in pairs(t) do
-			local line = ""
-			-- if k is a numerical index
-			-- check if it is reallly the current index : it could also be a number <= 0 or a float, ...
-			-- only if not deny by config
-			if type(k) == "number" and i == k and (cfg.ishort ~= false) then
-				i=i+1 -- increment the implicit index
---	"two",
---	AST: `Id{ "two" }
-			-- it's a key/hash index and k is a valid identifier and not a reserved word
-			elseif type(k) == "string" and cfg.kshort~=false and (type(identifier)~="string" or k:find(identifier)) and (not reserved or not reserved(k)) then
-				line = k .. assign
---	foo="FOO",
---	AST: `Pair{ `String{ "foo" }, `String{ "FOO" } }
-			else
-				line = "["..tprint(k,lvl,cfg).."]"..assign
---	["foo"]="FOO",
---	AST: `Pair{ `String{ "foo" }, `String{ "FOO" } }
--- or
---	[1]="one",
---	AST: `Pair{ `Number{ 1 }, `Id{ "one" } }
+			if not skipassign or not skipassign(t,k,v) then
+				local line = ""
+				-- if k is a numerical index
+				-- check if it is reallly the current index : it could also be a number <= 0 or a float, ...
+				-- only if not deny by config
+				if type(k) == "number" and i == k and (cfg.ishort ~= false) then
+					i=i+1 -- increment the implicit index
+					--	"two",
+					--	AST: `Id{ "two" }
+					-- it's a key/hash index and k is a valid identifier and not a reserved word
+				elseif type(k) == "string" and cfg.kshort~=false and (type(identifier)~="string" or k:find(identifier)) and (not reserved or not reserved(k)) then
+					line = k .. assign
+					--	foo="FOO",
+					--	AST: `Pair{ `String{ "foo" }, `String{ "FOO" } }
+				else
+					line = "["..tprint(k,lvl,cfg).."]"..assign
+					--	["foo"]="FOO",
+					--	AST: `Pair{ `String{ "foo" }, `String{ "FOO" } }
+					-- or
+					--	[1]="one",
+					--	AST: `Pair{ `Number{ 1 }, `Id{ "one" } }
+				end
+				-- the content value
+				r[#r+1]= (inline and "" or (indent):rep(lvl)) .. line .. tprint(v,lvl,cfg)..(separator)
 			end
-			-- the content value
-			r[#r+1]= (inline and "" or (indent):rep(lvl)) .. line .. tprint(v,lvl,cfg)..(separator)
-
 		end
 		lvl=lvl-1 -- dedent
 		r[#r+1]=(inline and "" or (indent):rep(lvl)).."}"
