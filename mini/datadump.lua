@@ -45,7 +45,7 @@ local function mkassigns(out)
 	local t,k,v
 	for _,t_k_v in ipairs(assigns) do
 		t,k,v=unpack(t_k_v)
-		table.insert(out,"tset("..table2code(t)..","..table2code(k)..","..table2code(v)..")")
+		table.insert(out,""..table2code(t).."[("..table2code(k)..")]="..table2code(v).."")
 	end
 end
 
@@ -71,7 +71,7 @@ end
 local function datadump(R, cfg_)
 
 	local out = {
-		"(function() local T={};local function tset(a,b,c) a[b]=c end"
+		"(function() local T={}"
 	}
 	if cfg_.inline ~= nil then
 		cfg.inline = cfg_.inline

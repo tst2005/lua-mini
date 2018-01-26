@@ -17,15 +17,15 @@ print(ret)
 
 --[[ Result:
 
-(function() local T={};local function tset(a,b,c) a[b]=c end
+(function() local T={}
 T[1]={a = "A",}
-T[2]={"BC",}
-T[3]={}
-tset(T[1],"c",T[2])
-tset(T[1],"b",T[2])
-tset(T[1],"x",T[3])
-tset(T[1],"rr",T[1])
-tset(T[1],T[3],"foo")
+T[2]={}
+T[3]={"BC",}
+T[1][("x")]=T[2]
+T[1][(T[2])]="foo"
+T[1][("b")]=T[3]
+T[1][("rr")]=T[1]
+T[1][("c")]=T[3]
 return T[1] end)()
 
 ]]--
