@@ -42,7 +42,7 @@ local function tprint(t, lvl, cfg)
 	local assign	= cfg.assign
 	local identifier = cfg.identifier
 	local reserved	= cfg.reserved
-	local inline	= cfg.inline
+	--local inline	= cfg.inline
 	local separator	= cfg.list_sep
 	local skipassign = cfg.skipassign
 
@@ -79,12 +79,12 @@ local function tprint(t, lvl, cfg)
 					--	AST: `Pair{ `Number{ 1 }, `Id{ "one" } }
 				end
 				-- the content value
-				r[#r+1]= (inline and "" or (indent):rep(lvl)) .. line .. tprint(v,lvl,cfg)..(separator)
+				r[#r+1]= (cfg.inline and "" or (indent):rep(lvl)) .. line .. tprint(v,lvl,cfg)..(separator)
 			end
 		end
 		lvl=lvl-1 -- dedent
-		r[#r+1]=(inline and "" or (indent):rep(lvl)).."}"
-		return table.concat(r, (inline and "" or "\n"))
+		r[#r+1]=(cfg.inline and "" or (indent):rep(lvl)).."}"
+		return table.concat(r, (cfg.inline and "" or "\n"))
 	end
 	if type(t) == "string" then
 		--return ("%q"):format(t)
