@@ -13,7 +13,7 @@
 |	|	|bit.numberlua	|bor		|y	|y	|y		|y	|minimal	|
 |	|bit32	|		|bor		|-	|-	|y		|	|minimal	|
 |bit	|	|		|bor		|y	|-	|y		|	|minimal	|
-|	|	|		|`|`		|	|	|		|`|`	|minimal	|
+|	|	|		|`\|`		|	|	|		|`\|`	|minimal	|
 |													|
 |	|	|bit.numberlua	|bxor		|y	|y	|y		|y	|minimal	|
 |	|bit32	|		|bxor		|-	|-	|y		|	|minimal	|
