@@ -2,6 +2,7 @@
 local G = {string={find=string.find, sub=string.sub}, type=type, table={insert=table.insert}}
 
 -- the strong's split function https://github.com/tst2005/strong/blob/master/strong.lua#L189-L205
+-- about (pos1 > pos2), see https://github.com/mebens/strong/pull/2
 return function(self, pat, plain, max, filter)
 	--self=type(self)=="table" and self[1] or self
 	assert(type(self)=="string")

@@ -16,7 +16,7 @@ return function(self, pat, plain, max)
 	while true do
 		local pos1, pos2 = find(self, pat, pos, plain or false)
 		--if not pos1 or (pos1 > pos2) or (max and #t>=max) then --FIXME: pos1>pos2 ?!
-		if not pos1 or pos1>pos2 or (max and #t>=max) then
+		if not pos1 or pos1 > pos2 or (max and #t>=max) then
 			tinsert(t, sub(self, pos))
 			return t
 		end

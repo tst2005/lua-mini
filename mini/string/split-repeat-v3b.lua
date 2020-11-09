@@ -9,18 +9,18 @@ return function(self, pat, plain, max)
 	assert(type(pat)=="string")
 	--plain
 	assert(not max or type(max)=="number")
-	local tinsert = table.insert or function(t,v) t[#t+1]=v end
+	local tinsert = table.insert
 	local find, sub = string.find, string.sub
 	local t = {}
-	local pos = 1
-	while true do
-		local pos1, pos2 = find(self, pat, pos, plain or false)
-		--if not pos1 or (pos1 > pos2) or (max and #t>=max) then --FIXME: pos1>pos2 ?!
-		if not pos1 or pos1>pos2 or (max and #t>=max) then
-			tinsert(t, sub(self, pos))
-			return t
-		end
+	local pos,pos1,pos2 = 1,nil
+
+	while (function()
+		pos1, pos2 = find(self, pat, pos, plain)
+		return pos1 and (not max or #t<max)
+	end)() do
 		tinsert(t, sub(self, pos, pos1 - 1))
 		pos = pos2+1
 	end
+	tinsert(t, sub(self, pos))
+	return t
 end
