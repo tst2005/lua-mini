@@ -16,7 +16,7 @@ return function(self, pat, plain, max, filter)
 	local t = {}
 	while true do
 		local pos1, pos2 = find(self, pat, 1, plain or false)
-		if not pos1 or pos1 > pos2 or max and #t>=max then
+		if not pos1 or pos1>pos2 or (max and #t>=max) then
 			if max and #t>=max then
 				return t, filter(self, t, true)
 			else

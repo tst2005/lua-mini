@@ -16,7 +16,7 @@ return function(self, pat, plain, max)
 
 	while (function()
 		pos1, pos2 = find(self, pat, pos, plain)
-		return pos1 and (not max or #t<max)
+		return pos1 and pos1<=pos2 and (not max or #t<max)
 	end)() do
 		tinsert(t, sub(self, pos, pos1 - 1))
 		pos = pos2+1

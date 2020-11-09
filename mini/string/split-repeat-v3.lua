@@ -16,7 +16,7 @@ return function(self, pat, plain, max)
 
 	local function search()
 		pos1, pos2 = find(self, pat, pos, plain)
-		return (pos1 and pos1<pos2 and (not max or #t<max))
+		return pos1 and pos1<=pos2 and (not max or #t<max)
 	end
 
 	while search() do

@@ -20,7 +20,7 @@ return function(self, pat, plain, max)
 			pos = pos2+1
 		end
 		pos1, pos2 = find(self, pat, pos, plain)
-	until not pos1 or (max and #t>=max);
+	until not pos1 or pos1>pos2 or (max and #t>=max);
 
 	tinsert(t, sub(self, pos))
 	return t
